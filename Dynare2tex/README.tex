@@ -1,0 +1,141 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+\usepackage{breqn}
+\usepackage[titletoc,toc,title]{appendix}
+\usepackage{graphicx}
+\usepackage[usenames,dvipsnames]{xcolor}
+\usepackage{lscape}
+\usepackage{longtable}
+\usepackage{authblk}
+\usepackage{hyperref}
+\usepackage[bw]{mcode}
+
+
+\title{Dynare2tex, Version 1.1\thanks{Any comments or suggestions are highly welcome.}}
+
+\author{
+Hossein Tavakolian \thanks{hossein.tavakolian@atu.ac.ir}\\
+Allameh Tabataba'i University of Tehran and Monetary and Banking Research Institute, Central Bank of Iran\\\
+Pedram Davoudi \thanks{pedram.davoudi@gmail.com}\\
+Monetary and Banking Research Institute, Central Bank of Iran}
+
+\begin{document}
+\maketitle
+\begin{abstract}
+Dynare is a useful tools in analyzing Dynamic Stochastic General Equilibrium (DSGE) models. This software contains different capabilities in manipulating DSGE models. Dynare gives its plot outputs as different formats which are available in MATLAB. However, Dynare have no option for comparing the Impulse Response Functions of different \texttt{*.mod} files. Dynare2tex helps users to compare the IRFs of different \texttt{*.mod} files and gives the results in the formats which are supported by MATLAB and new formats of \texttt{*.tex} and \texttt{*.tikz}. These two last formats are useful when the results are to be used in \LaTeX. They are also small files, the user can easily use them in her \texttt{*.tex} file and have high quality plots in her paper. To do this, Dynare2tex uses a very useful toolbox, \href{<http://www.mathworks.com/matlabcentral/fileexchange/22022-matlab2tikz-matlab2tikz>}{matlab2tikz} which is available on \href{<http://www.mathworks.com/matlabcentral>}{MathWorks}.
+\end{abstract}
+
+\section{Getting started}
+Dynare2tex in its first version includes 2 mfiles: \texttt{IRF\_plots.m} is the main function and \texttt{IRF\_plots\_manager.m} is a handler. For simple use it is just enough to change the inputs of \texttt{IRF\_plot\_manager.m} and run it. 
+
+\section{IRF\_plots}
+\texttt{IRF\_plots.m} function runs some different dynare \texttt{FILENAME.mod} files and plots their IRFs so that one can easily compare them. The function inputs can be both \texttt{FILENAME.mod} and \texttt{FILENAME_results.mat} files where \texttt{FILENAME} is the name of \texttt{*.mod} specified by user. Indeed, when the inputs are \texttt{FILENAME.mod}, the function runs Dynare first for all \texttt{*.mod} files, then removes all extra files and directories made by Dynare and keeps just \texttt{FILENAME_results.mat} files of all models. In the next step, the function extracts the information it needs to make a joint plot of models' IRFs which user wants to compare. \texttt{IRF\_plots.m} then uses matlab2tikz toolbox to convert MATLAB plots to \texttt{*.tex} or \texttt{*.tikz} formats or save the plots in other format specified by user. To Run this code, \texttt{FILENAME.mod} and \texttt{FILENAME_results.mat} files should be in the same directory of the function.
+
+The arguments of \texttt{IRF\_plots.m} are \texttt{Path}, \texttt{Mfile}, \texttt{VList}, \texttt{SList}, \texttt{Tmod}, \texttt{Image_Format}, \texttt{ReScale}, \texttt{Row},  \texttt{Column}, \texttt{irf\_duration}.
+
+\subsection{\texttt{Path}}
+
+\texttt{Path} is the path where the output is saved. The default \texttt{Path} is 
+
+\begin{lstlisting} 
+Path='Comp'
+\end{lstlisting}
+
+All the plot formats and \texttt{*.tex} files  will be saved in this directory. It should be noted that the files and directories in this folder will be deleted in every run of the \texttt{IRF\_plot\_manager.m}.
+
+\subsection{\texttt{Mfile}}
+Mfile: a cell that in each elemets determine The .mod or .mat files
+The mat file must be Dynare results and should be
+in the same folder of this function.
+For new cases just follow the pattern \texttt{Mfile\{\#\}='New.mod(mat)'};
+If the Mfiles are \texttt{*.mod} files, using \texttt{nograph}, \texttt{noprint} and 
+\texttt{graph_format=none} in \texttt{*.mod} files are highly recomended to
+speed up the code.
+\subsection{\texttt{VList}}
+\texttt{VList\{i\}} is a cell that in each model determines the IRF of which endogenous variable(s) to be drawn. The \texttt{Vlist\{i\}} includes the endogenous variables in the \texttt{Mfile\{i\}}. The order of variables is important for cross \texttt{*.mod} files. To plot the IRF of all variables just leave it empty.
+
+{\bf CAUTION:} In the last case ensure that all variables have the same order 
+in all \texttt{mod (mat)} files. 
+
+If the IRFs of just some variables are of interest, variable names are just needed in the first \texttt{VList\{i\}} and \texttt{@} sign can be 
+used in the others. For example, if just \texttt{y}, \texttt{pi} and \texttt{i} are the preferred 
+endogenous variables, the following format is needed:
+
+\begin{lstlisting} 
+VList{1}='y pi i'; 
+VList{2}='@';
+VList{3}='@';
+\end{lstlisting}
+
+\subsection{\texttt{SList}}
+\texttt{SList} is a cell which determines the IRFs with respect to which shocks to be drawn. The \texttt{SList\{i\}} includes the shocks in the \texttt{Mfile\{i\}}.  To plot IRFs with respect to all shocks, just leave \texttt{SList} empty.
+
+{\bf CAUTION:} The order of shocks in \texttt{SList\{i\}} is important for cross \texttt{*.mod} files.
+
+Use \texttt{@} sign instead of repeating shock names in the remaining \texttt{SLists\{i\}}. For example, if just \texttt{e\_i} and \texttt{e\_pi} are the preferred 
+endogenous variables, the following format is needed:
+
+\begin{lstlisting} 
+VList{1}='e_i e_pi'; 
+VList{2}='@';
+VList{3}='@';
+\end{lstlisting}
+
+
+\subsection{\texttt{Tmod}}
+\texttt{Tmod} is a cell that in each elements determines corresponding title of \texttt{*.mod} files. For instance, if the \texttt{*.mod} files are \texttt{New_Keynesian_Discretionary.mod}, \texttt{New_Keynesian.mod} and \texttt{New_Keynesian_Optimal_Policy.mod} and the corresponding name of models are Discretionary Policy, Rule-based Policy and Optimal Policy, then the following commands is needed:
+    
+\begin{lstlisting} 
+Tmod{1}='Discretionary Policy'; 
+Tmod{2}='Rule-based Policy';
+Tmod{3}='Optimal Policy';
+\end{lstlisting}
+
+\subsection{\texttt{Image_Format}}
+\texttt{Image_Format} is a cell determining the format of Dynare2tex outputs.
+The formats supported by Dynare2tex are bmp, eps, emf, jpg, pcx, pbm, pdf, pgm, png, ppm, svg, tif1, tif2, tex and tikz. \texttt{Image_Format} also accepts more than one format. For instance, if user needs both eps and tex formats, the following command is needed:
+
+\begin{lstlisting} 
+Image_Format={'eps'; 'tex'};
+\end{lstlisting}
+    
+\subsection{\texttt{ReScale}}
+\texttt{ReScale} is useful when comparing IRFs with different scales. For example, when the maximum value of an IRF is 0.5 and maximum value of another IRF is 0.0001, the comparison of two IRFs is not easy in joint plot of them. In this case, \texttt{ReScale=1} asks the \texttt{IRF\_plots.m} function to divide each IRF to its corresponding maximum value. To see the exact scale of the IRFs in plots, use \texttt{ReScale=0}.
+\subsection{Page Setting}
+The final output of Dynare2tex is a pdf file of all plots. The user can determine the number of rows and columns of plots in each page. The commands are \texttt{Column} and \texttt{Row}.
+ 
+\texttt{Column} indicates the number of columns in each page. If \texttt{nan}, it would be determined automatically. It must also be an integer
+
+\texttt{Row} indicates the number of rows in each page. If \texttt{nan} it would be 
+determined automatically. It must also be an integer.
+\subsection{\texttt{irf_duration}}
+\texttt{irf_duration} determines number of periods on which to plot the IRFs. It is recommended to use a high value of \texttt{irf} command in \texttt{*.mod} files so that it can be easily managed here.
+
+\section{The Outputs}
+Output folder includes:
+
+1. A series of folders entitled by "\texttt{Graphs\_ext}" where \texttt{ext} is format(s) introduced in \texttt{Image_Format},
+
+2. An excell file named "\texttt{FileGuid.xls}" containing name of all figures
+and corresponding variable and shock names for each \texttt{*.mod(mat)} file,
+
+3. A sample \texttt{tex} file by the name of "\texttt{Multi\_ext.tex}" that show how to use the outcomes in \LaTeX where where \texttt{ext} is format(s) introduced in \texttt{Image_Format}.
+
+\section{IRF\_plots\_manager}
+\texttt{IRF\_plots\_manager.m} file is used to introduce all the arguments of \texttt{IRF_plots.m}. All the arguments introduced in section 2 can be managed in this file. 
+
+{\bf To have outputs just run \texttt{IRF\_plots\_manager.m}} 
+
+\section{Default examples}
+There are 3 default\texttt{*.mod} files in Dynare2tex. The examples are based on basic New Keynesian model explained in Walsh (2010), Chapter 8. The 3 examples are
+\begin{itemize}
+\item \texttt{New_Keynesian.mod} is NK model with Taylor rule,
+\item \texttt{New_Keynesian_Discretionary.mod} is NK model  with discretionary monetary policy, 
+\item \texttt{New_Keynesian_Optimal_Policy.mod} is NK model with optimal Ramsey monetary policy. 
+\end{itemize}
+
+
+\end{document}
