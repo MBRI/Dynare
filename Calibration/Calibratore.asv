@@ -2,7 +2,7 @@
 function Opt=Calibratore(FileName,Par_Calib,Var_Calib,ACorr_Calib,SS_Calib,Mean_Calib)
 % FileName without Extension
 eval(['dynare ' FileName]);
-close all;
+
 load([FileName, '_results.mat']);
 PC=length(M_.params);
 % Restructure Dynare file
@@ -114,8 +114,6 @@ delete([fname, '.m']);
 delete([fname, '_results.mat']);
 delete([fname, '.log']);
 delete([fname, '*.eps']);
-delete([fname, '*.asv']);
-delete([fname, '_Calib.m']);
 rmdir(fname,'s');
 %delete([fname, '_results.mat']);
 %mkdir('dynarefiles');
@@ -132,19 +130,16 @@ end
 function [Min_Par_Calib,Step_Par_Calib,Max_Par_Calib]=GetCalibParam(Par_Calib0,M);
 Par_Calib0=strrep(Par_Calib0,'=',':');
 %Par_Calib=cellfun(@(x) strsplit(x,':'),Par_Calib0,'UniformOutput' , false);
-
-
+if strcmp(Par_Calib0{1},'*')
+    Par_Calib=cellstr(M.param_names);
+    
+else
 Cal={'','','',''};
 for i=1:length(Par_Calib0)
     Cal=[Cal;strsplit(Par_Calib0{i},':')];
 end
 Par_Calib0=Cal(2:end,:);
-
 Par_Calib=cellstr(M.param_names);
-if strcmp(Par_Calib0{1},'*')
-    Par_Calib0=[Par_Calib,repmat(Par_Calib0(2:end),size(Par_Calib,1),1)];
-end
-% Par_Calib=cellstr(M.param_names);
 Min_Par_Calib=M.params;
 Step_Par_Calib=ones(size(Min_Par_Calib,1),1);
 Max_Par_Calib=M.params;
@@ -156,7 +151,7 @@ for i=1:length(Par_Calib)
         Max_Par_Calib(i)=str2double(Cal{4});
     end
 end
-
+end
 %for i=1:length(Par_Calib)
 
 end
