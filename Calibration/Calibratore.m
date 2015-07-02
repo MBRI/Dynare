@@ -11,7 +11,7 @@ NewFile=writeNew_mFile(FileName);
 writeLoopFile(FileName,NewFile,PC);
 
 % Extract Calib Parameter
-[Min_Par_Calib,Step_Par_Calib,Max_Par_Calib]=GetCalibParam(Par_Calib,M_);
+[Min_Par_Calib,Step_Par_Calib,Max_Par_Calib]=GetCalibParam(Par_Calib,M_); %#ok<ASGLU>
 
 % Run the Loop File
 eval(['Res= ' FileName '_Calib(Min_Par_Calib,Step_Par_Calib,Max_Par_Calib);']);
@@ -33,33 +33,42 @@ fprintf(fid,'%s\n','global oo_');
 fprintf(fid,'%s\n','Res=struct();');
 % Struc counter
 fprintf(fid,'%s\n','SC=0;');
+fprintf(fid,'%s\n','h = waitbar(0,''Please wait...'');');
+fprintf(fid,'%s\n','itr=0;');
+
+%
+fprintf(fid,'Total_itration=ceil((Max_Par_Calib-Min_Par_Calib)./Step_Par_Calib);');
+fprintf(fid,'Total_itration=prod(Total_itration(Total_itration>0));');
 for i=1:PC
     fprintf(fid,'%s\n',['for Par_' num2str(i) '=Min_Par_Calib(' num2str(i) '): Step_Par_Calib(' num2str(i) '): Max_Par_Calib(' num2str(i) ')']);
+   
 end
 fprintf(fid,'%s','Par_Calib=[');
 for i=1:PC
     fprintf(fid,'%s',['Par_' num2str(i) ';']);
 end
 fprintf(fid,'%s\n','];');
+fprintf(fid,'%s\n','itr=itr+1;');
+fprintf(fid,'%s\n','waitbar(itr / Total_itration)');
 fprintf(fid,'%s\n','try');
 fprintf(fid,'%s\n',[FileName '_Cal(Par_Calib);']);
 fprintf(fid,'%s\n','end');
 % Close Fugurs
-fprintf(fid,'%s\n','close all');
+%fprintf(fid,'%s\n','close (h)');
 
 % Struc counter
 fprintf(fid,'%s\n','SC=SC+1;');
 % Save Variance
-fprintf(fid,'%s\n','Res.([''V'' num2str(SC)])=oo_.var;'); % Save Var-Cov Matrix
-fprintf(fid,'%s\n','Res.([''A'' num2str(SC)])=oo_.autocorr{1};'); % Save Auto Corelation Matrix
-fprintf(fid,'%s\n','Res.([''S'' num2str(SC)])=oo_.steady_state;'); % Save Steady State Vector
-fprintf(fid,'%s\n','Res.([''M'' num2str(SC)])=oo_.mean;'); % Save Mean Vector
-fprintf(fid,'%s\n','Res.([''P'' num2str(SC)])=Par_Calib;'); % Save Current Calibration Matrix
+fprintf(fid,'%s\n','Res.([''Itr'' num2str(SC)]).V=oo_.var;'); % Save Var-Cov Matrix
+fprintf(fid,'%s\n','Res.([''Itr'' num2str(SC)]).A=oo_.autocorr{1};'); % Save Auto Corelation Matrix
+fprintf(fid,'%s\n','Res.([''Itr'' num2str(SC)]).S=oo_.steady_state;'); % Save Steady State Vector
+fprintf(fid,'%s\n','Res.([''Itr'' num2str(SC)]).M=oo_.mean;'); % Save Mean Vector
+fprintf(fid,'%s\n','Res.([''Itr'' num2str(SC)]).P=Par_Calib;'); % Save Current Calibration Matrix
 %end for
 for i=1:PC
     fprintf(fid,'%s\n','end');
 end
-
+fprintf(fid,'%s\n','close (h)');
 %End of Loop Function
 fprintf(fid,'%s\n','end');
 
@@ -163,7 +172,7 @@ end
 
 function Opt=SecondBest(Res,Calib,Weight)
 % Number of fields
-NF=max(cellfun(@(x)str2double(x(2:end)),fields(Res)));
+NF=max(cellfun(@(x)str2double(x(4:end)),fields(Res)));
 % Clibration Vaues
 V=[reshape(Calib.Var,[],1); ...
     reshape(Calib.ACorr,[],1); ...
@@ -181,10 +190,10 @@ for i=1:NF
     %             reshape(Res.(['S' num2str(i)]),[],1); ...
     %             reshape(Res.(['M' num2str(i)]),[],1)];
     %     else
-    V=[V,[reshape(Res.(['V' num2str(i)]),[],1); ...
-        reshape(Res.(['A' num2str(i)]),[],1); ...
-        reshape(Res.(['S' num2str(i)]),[],1); ...
-        reshape(Res.(['M' num2str(i)]),[],1)]];
+    V=[V,[reshape(Res.(['Itr' num2str(i)]).V,[],1); ...
+        reshape(Res.(['Itr' num2str(i)]).A,[],1); ...
+        reshape(Res.(['Itr' num2str(i)]).S,[],1); ...
+        reshape(Res.(['Itr' num2str(i)]).M,[],1)]];
     %     end
 end
 W(isnan(V(:,1)),:)=[];
