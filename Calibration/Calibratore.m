@@ -1,5 +1,5 @@
 
-function Opt=Calibratore(FileName,Par_Calib,Var_Calib,ACorr_Calib,SS_Calib,Mean_Calib)
+function [Opt, Res]=Calibratore(FileName,Par_Calib,Calib,Weight)
 % FileName without Extension
 eval(['dynare ' FileName]);
 close all;
@@ -17,8 +17,8 @@ writeLoopFile(FileName,NewFile,PC);
 eval(['Res= ' FileName '_Calib(Min_Par_Calib,Step_Par_Calib,Max_Par_Calib);']);
 fields(Res);
 cleanup(FileName);
-clearvars -except Res Var_Calib ACorr_Calib SS_Calib Mean_Calib
-Opt=SecondBest(Res,Var_Calib,ACorr_Calib,SS_Calib,Mean_Calib);
+clearvars -except Res Calib  Weight
+Opt=SecondBest(Res,Calib,Weight);
 end
 
 function writeLoopFile(FileName,NewFile,PC)
@@ -115,7 +115,7 @@ delete([fname, '_results.mat']);
 delete([fname, '.log']);
 delete([fname, '*.eps']);
 delete([fname, '*.asv']);
-delete([fname, '_Calib.m']);
+% delete([fname, '_Calib.m']);
 rmdir(fname,'s');
 %delete([fname, '_results.mat']);
 %mkdir('dynarefiles');
@@ -161,13 +161,19 @@ end
 
 end
 
-function Opt=SecondBest(Res,Var_Calib,ACorr_Calib,SS_Calib,Mean_Calib)
+function Opt=SecondBest(Res,Calib,Weight)
 % Number of fields
 NF=max(cellfun(@(x)str2double(x(2:end)),fields(Res)));
-V=[reshape(Var_Calib,[],1); ...
-    reshape(ACorr_Calib,[],1); ...
-    reshape(SS_Calib,[],1); ...
-    reshape(Mean_Calib,[],1)];
+% Clibration Vaues
+V=[reshape(Calib.Var,[],1); ...
+    reshape(Calib.ACorr,[],1); ...
+    reshape(Calib.SS,[],1); ...
+    reshape(Calib.Mean,[],1)];
+% Weight Matrix
+W=[reshape(Weight.Var,[],1); ...
+    reshape(Weight.ACorr,[],1); ...
+    reshape(Weight.SS,[],1); ...
+    reshape(Weight.Mean,[],1)];
 for i=1:NF
     %     if i==1
     %         V=[reshape(Res.(['V' num2str(i)]),[],1); ...
@@ -181,11 +187,14 @@ for i=1:NF
         reshape(Res.(['M' num2str(i)]),[],1)]];
     %     end
 end
+W(isnan(V(:,1)),:)=[];
 V(isnan(V(:,1)),:)=[];
+V(isnan(W(:,1)),:)=[];
+W(isnan(W(:,1)),:)=[];
 
 V=V-diag(V(:,1))*ones(size(V));
 V(:,1)=[];
-V=V.'*eye(size(V,1))*V;
+V=V.'*diag(W)*V;
 V=diag(V);
 V(V~=min(V))=nan;
 V(V==min(V))=1;
