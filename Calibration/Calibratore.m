@@ -1,21 +1,59 @@
 
 function [Opt, Res]=Calibratore(FileName,Par_Calib,Calib,Weight)
+% this file is developed to simplify the handy calibration
+
+%% Error Checking
+% initial errors
+if ~exist('FileName','var')
+    error('Please introduce a mod file')
+end
+if ~exist('Par_Calib','var')
+    error('Please determie the calibration variables and range')
+end
+if ~exist('Calib','var')
+    warning('No calibration target specified.')
+    Calib=struct();
+end
+if ~exist('Weight','var')
+    warning('The equal weight assigned.')
+    Weight=struct();
+end
+ % file name errors
+ [~,FileName,~] =fileparts(FileName);
+ 
+ % Calib Errors
+ F1={'Var';'ACorr';'SS';'Mean'}; % all needed fields
+ FF=F1(~isfield(Calib,F1));
+ for i=1:size(FF,1)
+     Calib.(FF{i})=nan;
+ end
+ % Weight errors
+ FF=F1(~isfield(Weight,F1));
+ for i=1:size(FF,1)
+     Weight.(FF{i})=1;
+ end
+ 
+%% Biuld the necessary files
 % FileName without Extension
-eval(['dynare ' FileName]);
+eval(['dynare ' FileName '.mod']);
 close all;
 load([FileName, '_results.mat']);
 PC=length(M_.params);
+%% Second stage error checking base on mod results
+
+
+
+%%
+
+% Extract Calib Parameter
+[Min_Par_Calib,Step_Par_Calib,Max_Par_Calib]=GetCalibParam(Par_Calib,M_); %#ok<ASGLU>
 % Restructure Dynare file
 NewFile=writeNew_mFile(FileName);
 % Create Loop file
 writeLoopFile(FileName,NewFile,PC);
-
-% Extract Calib Parameter
-[Min_Par_Calib,Step_Par_Calib,Max_Par_Calib]=GetCalibParam(Par_Calib,M_); %#ok<ASGLU>
-
-% Run the Loop File
+%% Run the Loop File
 eval(['Res= ' FileName '_Calib(Min_Par_Calib,Step_Par_Calib,Max_Par_Calib);']);
-fields(Res);
+
 cleanup(FileName);
 clearvars -except Res Calib  Weight
 Opt=SecondBest(Res,Calib,Weight);
@@ -144,8 +182,12 @@ Par_Calib0=strrep(Par_Calib0,'=',':');
 
 
 Cal={'','','',''};
-for i=1:length(Par_Calib0)
+for i=1:size(Par_Calib0,1)
+    try
     Cal=[Cal;strsplit(Par_Calib0{i},':')];
+    catch
+       error('Not appropriate use of Par_Calib. '); 
+    end
 end
 Par_Calib0=Cal(2:end,:);
 
