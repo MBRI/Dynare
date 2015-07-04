@@ -10,7 +10,7 @@ d  = 0.99;
 
 model(linear);
 x= a*x(-1)+b*y(-1)+e_x;
-y=c*x;
+y=c*x(+1);
 end;
 
 

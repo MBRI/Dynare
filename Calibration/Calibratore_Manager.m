@@ -28,11 +28,11 @@ Weight.SS=[1,1];
 % Wieght Matrix
 
 % Steady State 
-Calib.Mean=[nan,nan];
+%Calib.Mean=[nan,nan];
 Weight.Mean=[nan,nan];
 % Weight Vector
 
-[Opt, Res]=Calibratore(FileName,Par_Calib,Calib,Weight);
+[Opt, Res]=Calibratore(FileName,Par_Calib,Calib);
 
 
 % Clear Extra Var
