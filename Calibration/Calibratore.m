@@ -7,6 +7,9 @@ function [Opt, Res]=Calibratore(FileName,Par_Calib,Calib,Weight)
 if ~exist('FileName','var')
     error('Please introduce a mod file')
 end
+% if ~exist(FileName,'file')
+%     error([FileName ' doesn''t exist.'])
+% end
 if ~exist('Par_Calib','var')
     error('Please determie the calibration variables and range')
 end
@@ -156,6 +159,7 @@ NewFile=writeNew_mFile(FileName);
 % Create Loop file
 writeLoopFile(FileName,NewFile,PC);
 %% Run the Loop File
+rehash
 eval(['Res= ' FileName '_Calib(Min_Par_Calib,Step_Par_Calib,Max_Par_Calib);']);
 %Clean Extra files
 cleanup(FileName);
@@ -267,7 +271,7 @@ delete([fname, '_results.mat']);
 delete([fname, '.log']);
 delete([fname, '*.eps']);
 delete([fname, '*.asv']);
-% delete([fname, '_Calib.m']);
+delete([fname, '_Calib.m']);
 rmdir(fname,'s');
 %delete([fname, '_results.mat']);
 %mkdir('dynarefiles');
