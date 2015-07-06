@@ -21,21 +21,21 @@ if ~exist('Weight','var')
     warning('The equal weight assigned.')
     Weight=struct();
 end
- % file name errors
- [~,FileName,~] =fileparts(FileName);
- 
- % Calib Errors
- F1={'Var';'ACorr';'SS';'Mean'}; % all needed fields
- FF=F1(~isfield(Calib,F1));
- for i=1:size(FF,1)
-     Calib.(FF{i})=nan;
- end
- % Weight errors
- FF=F1(~isfield(Weight,F1));
- for i=1:size(FF,1)
-     Weight.(FF{i})=1;
- end
- clear FF;
+% file name errors
+[~,FileName,~] =fileparts(FileName);
+
+% Calib Errors
+F1={'Var';'ACorr';'SS';'Mean'}; % all needed fields
+FF=F1(~isfield(Calib,F1));
+for i=1:size(FF,1)
+    Calib.(FF{i})=nan;
+end
+% Weight errors
+FF=F1(~isfield(Weight,F1));
+for i=1:size(FF,1)
+    Weight.(FF{i})=1;
+end
+clear FF;
 %% Biuld the necessary files
 % FileName without Extension
 eval(['dynare ' FileName '.mod']);
@@ -45,122 +45,18 @@ PC=M_.param_nbr;
 VC=M_.endo_nbr;
 
 %% Second stage error checking base on mod results
-% Var
-if size(Calib.Var,1)>VC;
-    warning('Calib.Var has extra rows. I drop them')
-    Calib.Var(VC+1:end,:)=[];
-end
-if size(Calib.Var,2)>VC;
-    warning('Calib.Var has extra columns. I drop them')
-    Calib.Var(:,VC+1:end)=[];
-end
-if size(Calib.ACorr,1)>VC;
-    warning('Calib.ACorr has extra rows. I drop them')
-    Calib.Var(VC+1:end,:)=[];
-end
-if size(Calib.ACorr,2)>VC;
-    warning('Calib.ACorr has extra columns. I drop them')
-    Calib.Var(:,VC+1:end)=[];
-end
-
-if length (Calib.SS)>VC;
-    warning('Calib.SS has extra elements. I drop them')
-    Calib.Var(VC+1:end)=[];
-end
-if length (Calib.Mean)>VC;
-    warning('Calib.Mean has extra elements. I drop them')
-    Calib.Var(VC+1:end)=[];
-end
-
-if size(Calib.Var,1)<VC;
-    warning('Calib.Var has not adequate rows. I fill with nan')
-    Calib.Var=[Calib.Var;nan(VC-size(Calib.Var,1),size(Calib.Var,2))];
-end
-if size(Calib.Var,2)<VC;
-    warning('Calib.Var has  not adequate columns. I fill with nan')
-       Calib.Var=[Calib.Var,nan(size(Calib.Var,1),VC-size(Calib.Var,2))];
-end
-if size(Calib.ACorr,1)<VC;
-    warning('Calib.ACorr has not adequate rows. I fill with nan')
-    Calib.ACorr=[Calib.ACorr;nan(VC-size(Calib.ACorr,1),size(Calib.ACorr,2))];
-end
-if size(Calib.ACorr,2)<VC;
-    warning('Calib.ACorr has not adequate columns. I fill with nan')
-    Calib.ACorr=[Calib.ACorr,nan(size(Calib.ACorr,1),VC-size(Calib.ACorr,2))];
-end
-
-if length (Calib.SS)<VC;
-    warning('Calib.SS has not adequate elements. I fill with nan')
-    Calib.SS(end+1:VC)=nan;
-end
-if length (Calib.Mean)<VC;
-    warning('Calib.Mean has not adequate elements. I fill with nan')
-    Calib.Mean(end+1:VC)=nan;
-end
-
-% Weight
-if size(Weight.Var,1)>VC;
-    warning('Calib.Var has extra rows. I drop them')
-    Weight.Var(VC+1:end,:)=[];
-end
-if size(Weight.Var,2)>VC;
-    warning('Calib.Var has extra columns. I drop them')
-    Weight.Var(:,VC+1:end)=[];
-end
-if size(Weight.ACorr,1)>VC;
-    warning('Calib.ACorr has extra rows. I drop them')
-    Weight.Var(VC+1:end,:)=[];
-end
-if size(Weight.ACorr,2)>VC;
-    warning('Calib.ACorr has extra columns. I drop them')
-    Weight.Var(:,VC+1:end)=[];
-end
-
-if length (Weight.SS)>VC;
-    warning('Calib.SS has extra elements. I drop them')
-    Weight.Var(VC+1:end)=[];
-end
-if length (Weight.Mean)>VC;
-    warning('Calib.Mean has extra elements. I drop them')
-    Weight.Var(VC+1:end)=[];
-end
-
-if size(Weight.Var,1)<VC;
-    warning('Calib.Var has not adequate rows. I fill with nan')
-    Weight.Var=[Weight.Var;ones(VC-size(Weight.Var,1),size(Weight.Var,2))];
-end
-if size(Weight.Var,2)<VC;
-    warning('Calib.Var has  not adequate columns. I fill with nan')
-       Weight.Var=[Weight.Var,ones(size(Weight.Var,1),VC-size(Weight.Var,2))];
-end
-if size(Weight.ACorr,1)<VC;
-    warning('Calib.ACorr has not adequate rows. I fill with nan')
-    Weight.ACorr=[Weight.ACorr;ones(VC-size(Weight.ACorr,1),size(Weight.ACorr,2))];
-end
-if size(Weight.ACorr,2)<VC;
-    warning('Calib.ACorr has not adequate columns. I fill with nan')
-    Weight.ACorr=[Weight.ACorr,ones(size(Weight.ACorr,1),VC-size(Weight.ACorr,2))];
-end
-
-if length (Weight.SS)<VC;
-    warning('Calib.SS has not adequate elements. I fill with nan')
-    Weight.SS(end+1:VC)=ones();
-end
-if length (Weight.Mean)<VC;
-    warning('Calib.Mean has not adequate elements. I fill with nan')
-    Weight.Mean(end+1:VC)=ones();
-end
+[FileName,Par_Calib,Calib,Weight]=errHandl(FileName,Par_Calib,Calib,Weight,VC);
 %%
 
-% Extract Calib Parameter
-[Min_Par_Calib,Step_Par_Calib,Max_Par_Calib]=GetCalibParam(Par_Calib,M_); %#ok<ASGLU>
+% Extract Calib Parameter % [Min_Par_Calib,Step_Par_Calib,Max_Par_Calib]=
+GetCalibParam(Par_Calib,M_);
 % Restructure Dynare file
 NewFile=writeNew_mFile(FileName);
 % Create Loop file
 writeLoopFile(FileName,NewFile,PC);
 %% Run the Loop File
 rehash
-eval(['Res= ' FileName '_Calib(Min_Par_Calib,Step_Par_Calib,Max_Par_Calib);']);
+eval(['Res= ' FileName '_Calib();']);
 %Clean Extra files
 cleanup(FileName);
 clearvars -except Res Calib  Weight
@@ -174,8 +70,16 @@ if exist([FileName '_Calib.m'],'file')
     delete([FileName '_Calib.m']);
 end
 fid=fopen([FileName '_Calib.m'],'w+');
-fprintf(fid,'%s\n',['function [Res]=' FileName '_Calib(Min_Par_Calib,Step_Par_Calib,Max_Par_Calib)']);
+fprintf(fid,'%s\n',['function [Res]=' FileName '_Calib()']);%Min_Par_Calib,Step_Par_Calib,Max_Par_Calib
 fprintf(fid,'%s\n','global oo_');
+% Load init valus
+fprintf(fid,'%s\n','load ''.temp/init.mat'';');
+
+fprintf(fid,'%s\n','Min_Par_Calib=init.Min_Par_Calib;');
+fprintf(fid,'%s\n','Step_Par_Calib=init.Step_Par_Calib;');
+fprintf(fid,'%s\n','Max_Par_Calib=init.Max_Par_Calib;');
+
+
 % Create Empty Structure Paramete
 fprintf(fid,'%s\n','Res=struct();');
 % Struc counter
@@ -188,7 +92,7 @@ fprintf(fid,'Total_itration=ceil((Max_Par_Calib-Min_Par_Calib)./Step_Par_Calib);
 fprintf(fid,'Total_itration=prod(Total_itration(Total_itration>0));');
 for i=1:PC
     fprintf(fid,'%s\n',['for Par_' num2str(i) '=Min_Par_Calib(' num2str(i) '): Step_Par_Calib(' num2str(i) '): Max_Par_Calib(' num2str(i) ')']);
-   
+    
 end
 fprintf(fid,'%s','Par_Calib=[');
 for i=1:PC
@@ -285,17 +189,16 @@ rmdir(fname,'s');
 
 warning on all;
 end
-function [Min_Par_Calib,Step_Par_Calib,Max_Par_Calib]=GetCalibParam(Par_Calib0,M)
+function GetCalibParam(Par_Calib0,M)
+%[Min_Par_Calib,Step_Par_Calib,Max_Par_Calib]=
 Par_Calib0=strrep(Par_Calib0,'=',':');
 %Par_Calib=cellfun(@(x) strsplit(x,':'),Par_Calib0,'UniformOutput' , false);
-
-
 Cal={'','','',''};
 for i=1:size(Par_Calib0,1)
     try
-    Cal=[Cal;strsplit(Par_Calib0{i},':')];
+        Cal=[Cal;strsplit(Par_Calib0{i},':')];
     catch
-       error('Not appropriate use of Par_Calib. '); 
+        error('Not appropriate use of Par_Calib. ');
     end
 end
 Par_Calib0=Cal(2:end,:);
@@ -318,7 +221,14 @@ for i=1:length(Par_Calib)
 end
 
 %for i=1:length(Par_Calib)
-
+init.Min_Par_Calib=Min_Par_Calib;
+init.Step_Par_Calib=Step_Par_Calib;
+init.Max_Par_Calib=Max_Par_Calib;
+if exist('.temp','dir')
+    rmdir('.temp','s')
+end
+mkdir .temp
+save '.temp/init.mat' init;
 end
 function Opt=SecondBest(Res,Calib,Weight)
 % Number of fields
@@ -361,7 +271,7 @@ end
 V(V~=min(V))=nan;
 V(V==min(V))=1;
 
-    
+
 for i=1:NF
     if V(i)~=1
         Res.(['V' num2str(i)])=[];
@@ -372,4 +282,111 @@ for i=1:NF
     end
 end
 Opt=Res;
+end
+function [FileName,Par_Calib,Calib,Weight]=errHandl(FileName,Par_Calib,Calib,Weight,VC)
+% Var
+if size(Calib.Var,1)>VC;
+    warning('Calib.Var has extra rows. I drop them')
+    Calib.Var(VC+1:end,:)=[];
+end
+if size(Calib.Var,2)>VC;
+    warning('Calib.Var has extra columns. I drop them')
+    Calib.Var(:,VC+1:end)=[];
+end
+if size(Calib.ACorr,1)>VC;
+    warning('Calib.ACorr has extra rows. I drop them')
+    Calib.Var(VC+1:end,:)=[];
+end
+if size(Calib.ACorr,2)>VC;
+    warning('Calib.ACorr has extra columns. I drop them')
+    Calib.Var(:,VC+1:end)=[];
+end
+
+if length (Calib.SS)>VC;
+    warning('Calib.SS has extra elements. I drop them')
+    Calib.Var(VC+1:end)=[];
+end
+if length (Calib.Mean)>VC;
+    warning('Calib.Mean has extra elements. I drop them')
+    Calib.Var(VC+1:end)=[];
+end
+
+if size(Calib.Var,1)<VC;
+    warning('Calib.Var has not adequate rows. I fill with nan')
+    Calib.Var=[Calib.Var;nan(VC-size(Calib.Var,1),size(Calib.Var,2))];
+end
+if size(Calib.Var,2)<VC;
+    warning('Calib.Var has  not adequate columns. I fill with nan')
+    Calib.Var=[Calib.Var,nan(size(Calib.Var,1),VC-size(Calib.Var,2))];
+end
+if size(Calib.ACorr,1)<VC;
+    warning('Calib.ACorr has not adequate rows. I fill with nan')
+    Calib.ACorr=[Calib.ACorr;nan(VC-size(Calib.ACorr,1),size(Calib.ACorr,2))];
+end
+if size(Calib.ACorr,2)<VC;
+    warning('Calib.ACorr has not adequate columns. I fill with nan')
+    Calib.ACorr=[Calib.ACorr,nan(size(Calib.ACorr,1),VC-size(Calib.ACorr,2))];
+end
+
+if length (Calib.SS)<VC;
+    warning('Calib.SS has not adequate elements. I fill with nan')
+    Calib.SS(end+1:VC)=nan;
+end
+if length (Calib.Mean)<VC;
+    warning('Calib.Mean has not adequate elements. I fill with nan')
+    Calib.Mean(end+1:VC)=nan;
+end
+
+% Weight
+if size(Weight.Var,1)>VC;
+    warning('Calib.Var has extra rows. I drop them')
+    Weight.Var(VC+1:end,:)=[];
+end
+if size(Weight.Var,2)>VC;
+    warning('Calib.Var has extra columns. I drop them')
+    Weight.Var(:,VC+1:end)=[];
+end
+if size(Weight.ACorr,1)>VC;
+    warning('Calib.ACorr has extra rows. I drop them')
+    Weight.Var(VC+1:end,:)=[];
+end
+if size(Weight.ACorr,2)>VC;
+    warning('Calib.ACorr has extra columns. I drop them')
+    Weight.Var(:,VC+1:end)=[];
+end
+
+if length (Weight.SS)>VC;
+    warning('Calib.SS has extra elements. I drop them')
+    Weight.Var(VC+1:end)=[];
+end
+if length (Weight.Mean)>VC;
+    warning('Calib.Mean has extra elements. I drop them')
+    Weight.Var(VC+1:end)=[];
+end
+
+if size(Weight.Var,1)<VC;
+    warning('Calib.Var has not adequate rows. I fill with nan')
+    Weight.Var=[Weight.Var;ones(VC-size(Weight.Var,1),size(Weight.Var,2))];
+end
+if size(Weight.Var,2)<VC;
+    warning('Calib.Var has  not adequate columns. I fill with nan')
+    Weight.Var=[Weight.Var,ones(size(Weight.Var,1),VC-size(Weight.Var,2))];
+end
+if size(Weight.ACorr,1)<VC;
+    warning('Calib.ACorr has not adequate rows. I fill with nan')
+    Weight.ACorr=[Weight.ACorr;ones(VC-size(Weight.ACorr,1),size(Weight.ACorr,2))];
+end
+if size(Weight.ACorr,2)<VC;
+    warning('Calib.ACorr has not adequate columns. I fill with nan')
+    Weight.ACorr=[Weight.ACorr,ones(size(Weight.ACorr,1),VC-size(Weight.ACorr,2))];
+end
+
+if length (Weight.SS)<VC;
+    warning('Calib.SS has not adequate elements. I fill with nan')
+    Weight.SS(end+1:VC)=ones();
+end
+if length (Weight.Mean)<VC;
+    warning('Calib.Mean has not adequate elements. I fill with nan')
+    Weight.Mean(end+1:VC)=ones();
+end
 end
