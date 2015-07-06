@@ -77,18 +77,28 @@ fprintf(fid,'%s\n','load ''.temp/init.mat'';');
 fprintf(fid,'%s\n','Min_Par_Calib=init.Min_Par_Calib;');
 fprintf(fid,'%s\n','Step_Par_Calib=init.Step_Par_Calib;');
 fprintf(fid,'%s\n','Max_Par_Calib=init.Max_Par_Calib;');
-
+fprintf(fid,'%s\n','');
+%
+%
+fprintf(fid,'%s\n','Total_itration=ceil((Max_Par_Calib-Min_Par_Calib)./Step_Par_Calib);');
+fprintf(fid,'%s\n','Total_itration=prod(Total_itration(Total_itration>0));');
+%
+fprintf(fid,'%s\n','');
+fprintf(fid,'%s\n','if exist(''.temp/LVal.mat'',''file'')');
+fprintf(fid,'%s\n','load ''.temp/LVal.mat'';');
+fprintf(fid,'%s\n','Min_Par_Calib=Par_Calib;');
+fprintf(fid,'%s\n','end');
 
 % Create Empty Structure Paramete
 fprintf(fid,'%s\n','Res=struct();');
 % Struc counter
 %fprintf(fid,'%s\n','SC=0;');
-fprintf(fid,'%s\n','h = waitbar(0,''Please wait...'');');
-fprintf(fid,'%s\n','itr=0;');
+fprintf(fid,'%s\n','h = waitbar(itr/Total_itration,''Please wait...'');');
+%fprintf(fid,'%s\n','itr=0;');
 
-%
-fprintf(fid,'Total_itration=ceil((Max_Par_Calib-Min_Par_Calib)./Step_Par_Calib);');
-fprintf(fid,'Total_itration=prod(Total_itration(Total_itration>0));');
+
+fprintf(fid,'%s\n','');
+fprintf(fid,'%s\n','% loop');
 for i=1:PC
     fprintf(fid,'%s\n',['for Par_' num2str(i) '=Min_Par_Calib(' num2str(i) '): Step_Par_Calib(' num2str(i) '): Max_Par_Calib(' num2str(i) ')']);
     
@@ -99,6 +109,7 @@ for i=1:PC
 end
 fprintf(fid,'%s\n','];');
 fprintf(fid,'%s\n','itr=itr+1;');
+fprintf(fid,'%s\n','save ''.temp/LVal'' Par_Calib itr;');
 fprintf(fid,'%s\n','waitbar(itr / Total_itration)');
 fprintf(fid,'%s\n','try');
 fprintf(fid,'%s\n',[FileName '_Cal(Par_Calib);']);
@@ -229,11 +240,12 @@ end
 init.Min_Par_Calib=Min_Par_Calib;
 init.Step_Par_Calib=Step_Par_Calib;
 init.Max_Par_Calib=Max_Par_Calib;
+itr=0; % it is useful
 if exist('.temp','dir')
     rmdir('.temp','s')
 end
 mkdir .temp
-save '.temp/init.mat' init;
+save '.temp/init.mat' init itr;
 end
 function Opt=SecondBest(Calib,Weight)
 MaxSize=1000;
