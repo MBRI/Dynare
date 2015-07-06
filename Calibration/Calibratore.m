@@ -166,7 +166,7 @@ NewFile=strrep(NewFile,'options_.noprint','% options_.noprint');
 NewFile=strrep(NewFile,'options_.nograph','% options_.nograph');
 NewFile=strrep(NewFile,'options_.graph_format','% options_.graph_format');
 % Set  No Output
-NewFile=strrep(NewFile,'options_ = [];',['options_ = [];' char(10)  'options_.noprint=1;' char(10)  'options_.nograph=1;' char(10)  'options_.graph_format=''none'';']);
+NewFile=strrep(NewFile,'global_initialization;',['global_initialization;' char(10)  'options_.noprint=1;' char(10)  'options_.nograph=1;' char(10)  'options_.graph_format=''none'';']);
 
 % End the created function
 NewFile=sprintf('%s \n %s',NewFile,'end ');
