@@ -12,7 +12,7 @@ Par_Calib(2)={'c:-6:0.1:6'};
 
 
 %Variance
-Calib.Var=[1,nan;0,1];
+Calib.Var=[0,nan;nan,0];
 
 % Variance Weight Matrix
 Weight.Var=[1,1;1,1];

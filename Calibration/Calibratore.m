@@ -63,7 +63,6 @@ clearvars -except Calib  Weight
 % find the Best option
 Opt=SecondBest(Calib,Weight);
 end
-
 function writeLoopFile(FileName,NewFile,PC)
 %Remove previous file
 if exist([FileName '_Calib.m'],'file')
@@ -237,14 +236,14 @@ mkdir .temp
 save '.temp/init.mat' init;
 end
 function Opt=SecondBest(Calib,Weight)
-
+MaxSize=1000;
 % Clibration Vaues
-V=[reshape(Calib.Var,[],1); ...
+V0=[reshape(Calib.Var,[],1); ...
     reshape(Calib.ACorr,[],1); ...
     reshape(Calib.SS,[],1); ...
     reshape(Calib.Mean,[],1)];
 % Weight Matrix
-W=[reshape(Weight.Var,[],1); ...
+W0=[reshape(Weight.Var,[],1); ...
     reshape(Weight.ACorr,[],1); ...
     reshape(Weight.SS,[],1); ...
     reshape(Weight.Mean,[],1)];
@@ -252,24 +251,23 @@ W=[reshape(Weight.Var,[],1); ...
 % Load data files
 F=dir('.temp/Itr*.mat');
 F={F.name};
-
+%Res=struct();
 % Number of fields
-NF=length(F);%max(cellfun(@(x)str2double(x(4:end)),fields(Res)));
-for i=1:NF
+NF=length(F);%
+h=min(MaxSize,NF);
+NF1=1; 
+while(1)
+    V=V0;
+    W=W0;
+for i=NF1:h
     load(['.temp/' F{i}]);
     Res.(['Itr' num2str(i)])=Itr;
     Res.(['Itr' num2str(i)]).I=i; % Chain to .temp
     clear Itr;
 end
 
-for i=1:NF
-    %     if i==1
-    %         V=[reshape(Res.(['V' num2str(i)]),[],1); ...
-    %             % reshape(Res.(['A' num2str(i)]),[],1); ...
-    %             reshape(Res.(['S' num2str(i)]),[],1); ...
-    %             reshape(Res.(['M' num2str(i)]),[],1)];
-    %     else
-    V=[V,[reshape(Res.(['Itr' num2str(i)]).V,[],1); ...
+for i=NF1:h
+      V=[V,[reshape(Res.(['Itr' num2str(i)]).V,[],1); ...
         reshape(Res.(['Itr' num2str(i)]).A,[],1); ...
         reshape(Res.(['Itr' num2str(i)]).S,[],1); ...
         reshape(Res.(['Itr' num2str(i)]).M,[],1)]];
@@ -287,14 +285,22 @@ V=diag(V);
 if length(min(V))>1
     warning('More than one solution found.');
 end
-V(V~=min(V))=nan;
-V(V==min(V))=1;
+%V(V~=min(V))=nan;
+%V(V==min(V))=1;
 
+Fld=fields(Res);
+Fld(V==min(V))=[];
+Res=rmfield(Res,Fld);
 
-for i=1:NF
-    if V(i)~=1
-        Res=rmfield(Res,['Itr' num2str(i)]);
-    end
+if h==NF
+    break;
+else
+    NF1=h+1;
+end
+h=MaxSize+NF;
+if h>NF
+    h=NF;
+end
 end
 Opt=Res;
 end
