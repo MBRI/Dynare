@@ -1,5 +1,5 @@
 
-function [Opt, Res]=Calibratore(FileName,Par_Calib,Calib,Weight)
+function [Opt]=Calibratore(FileName,Par_Calib,Calib,Weight)
 % this file is developed to simplify the handy calibration
 
 %% Error Checking
@@ -56,12 +56,12 @@ NewFile=writeNew_mFile(FileName);
 writeLoopFile(FileName,NewFile,PC);
 %% Run the Loop File
 rehash
-eval(['Res= ' FileName '_Calib();']);
+eval([FileName '_Calib();']);
 %Clean Extra files
 cleanup(FileName);
-clearvars -except Res Calib  Weight
+clearvars -except Calib  Weight
 % find the Best option
-Opt=SecondBest(Res,Calib,Weight);
+Opt=SecondBest(Calib,Weight);
 end
 
 function writeLoopFile(FileName,NewFile,PC)
@@ -70,7 +70,7 @@ if exist([FileName '_Calib.m'],'file')
     delete([FileName '_Calib.m']);
 end
 fid=fopen([FileName '_Calib.m'],'w+');
-fprintf(fid,'%s\n',['function [Res]=' FileName '_Calib()']);%Min_Par_Calib,Step_Par_Calib,Max_Par_Calib
+fprintf(fid,'%s\n',['function ' FileName '_Calib()']);%Min_Par_Calib,Step_Par_Calib,Max_Par_Calib
 fprintf(fid,'%s\n','global oo_');
 % Load init valus
 fprintf(fid,'%s\n','load ''.temp/init.mat'';');
@@ -83,7 +83,7 @@ fprintf(fid,'%s\n','Max_Par_Calib=init.Max_Par_Calib;');
 % Create Empty Structure Paramete
 fprintf(fid,'%s\n','Res=struct();');
 % Struc counter
-fprintf(fid,'%s\n','SC=0;');
+%fprintf(fid,'%s\n','SC=0;');
 fprintf(fid,'%s\n','h = waitbar(0,''Please wait...'');');
 fprintf(fid,'%s\n','itr=0;');
 
@@ -103,18 +103,24 @@ fprintf(fid,'%s\n','itr=itr+1;');
 fprintf(fid,'%s\n','waitbar(itr / Total_itration)');
 fprintf(fid,'%s\n','try');
 fprintf(fid,'%s\n',[FileName '_Cal(Par_Calib);']);
-fprintf(fid,'%s\n','end');
+
 % Close Fugurs
 %fprintf(fid,'%s\n','close (h)');
 
 % Struc counter
-fprintf(fid,'%s\n','SC=SC+1;');
+%fprintf(fid,'%s\n','SC=SC+1;');
 % Save Variance
-fprintf(fid,'%s\n','Res.([''Itr'' num2str(SC)]).V=oo_.var;'); % Save Var-Cov Matrix
-fprintf(fid,'%s\n','Res.([''Itr'' num2str(SC)]).A=oo_.autocorr{1};'); % Save Auto Corelation Matrix
-fprintf(fid,'%s\n','Res.([''Itr'' num2str(SC)]).S=oo_.steady_state;'); % Save Steady State Vector
-fprintf(fid,'%s\n','Res.([''Itr'' num2str(SC)]).M=oo_.mean;'); % Save Mean Vector
-fprintf(fid,'%s\n','Res.([''Itr'' num2str(SC)]).P=Par_Calib;'); % Save Current Calibration Matrix
+
+fprintf(fid,'%s\n','Itr.V=oo_.var;'); % Save Var-Cov Matrix
+fprintf(fid,'%s\n','Itr.A=oo_.autocorr{1};'); % Save Auto Corelation Matrix
+fprintf(fid,'%s\n','Itr.S=oo_.steady_state;'); % Save Steady State Vector
+fprintf(fid,'%s\n','Itr.M=oo_.mean;'); % Save Mean Vector
+fprintf(fid,'%s\n','Itr.P=Par_Calib;'); % Save Current Calibration Matrix
+%fprintf(fid,'%s\n','eval([''Itr'' numstr(itr) ''=Itr;'']);');
+fprintf(fid,'%s\n','save ([''.temp/Itr'' num2str(itr) ''.mat''], ''Itr'')');
+fprintf(fid,'%s\n', ' clear Itr');
+% end of try
+fprintf(fid,'%s\n','end');
 %end for
 for i=1:PC
     fprintf(fid,'%s\n','end');
@@ -230,9 +236,8 @@ end
 mkdir .temp
 save '.temp/init.mat' init;
 end
-function Opt=SecondBest(Res,Calib,Weight)
-% Number of fields
-NF=max(cellfun(@(x)str2double(x(4:end)),fields(Res)));
+function Opt=SecondBest(Calib,Weight)
+
 % Clibration Vaues
 V=[reshape(Calib.Var,[],1); ...
     reshape(Calib.ACorr,[],1); ...
@@ -243,6 +248,20 @@ W=[reshape(Weight.Var,[],1); ...
     reshape(Weight.ACorr,[],1); ...
     reshape(Weight.SS,[],1); ...
     reshape(Weight.Mean,[],1)];
+
+% Load data files
+F=dir('.temp/Itr*.mat');
+F={F.name};
+
+% Number of fields
+NF=length(F);%max(cellfun(@(x)str2double(x(4:end)),fields(Res)));
+for i=1:NF
+    load(['.temp/' F{i}]);
+    Res.(['Itr' num2str(i)])=Itr;
+    Res.(['Itr' num2str(i)]).I=i; % Chain to .temp
+    clear Itr;
+end
+
 for i=1:NF
     %     if i==1
     %         V=[reshape(Res.(['V' num2str(i)]),[],1); ...
@@ -274,11 +293,7 @@ V(V==min(V))=1;
 
 for i=1:NF
     if V(i)~=1
-        Res.(['V' num2str(i)])=[];
-        Res.(['A' num2str(i)])=[];
-        Res.(['S' num2str(i)])=[];
-        Res.(['M' num2str(i)])=[];
-        Res.(['P' num2str(i)])=[];
+        Res=rmfield(Res,['Itr' num2str(i)]);
     end
 end
 Opt=Res;

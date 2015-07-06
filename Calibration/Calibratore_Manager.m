@@ -7,8 +7,8 @@ FileName='example1.mod';
 
 % Minimum % Step %Maximum
 % Par_Calib(1)={'*=1:0.1:6'};
-Par_Calib(1)={'a=1:0.1:6'};
-%Par_Calib(2)={'c:1:0.1:6'};
+Par_Calib(1)={'a=-6:0.1:6'};
+Par_Calib(2)={'c:-6:0.1:6'};
 
 
 %Variance
@@ -32,8 +32,8 @@ Weight.SS=[1,1];
 Weight.Mean=[nan,nan];
 % Weight Vector
 
-[Opt, Res]=Calibratore(FileName,Par_Calib,Calib);
+Opt=Calibratore(FileName,Par_Calib,Calib);
 
 
 % Clear Extra Var
-clearvars -except Res Opt
+clearvars -except Opt
