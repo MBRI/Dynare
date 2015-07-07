@@ -1,59 +1,76 @@
 
 function [Opt]=Calibratore(FileName,Par_Calib,Calib,Weight)
 % this file is developed to simplify the handy calibration
-
-%% Error Checking
-% initial errors
-if ~exist('FileName','var')
-    error('Please introduce a mod file')
+if nargin==0
+    if exist('.temp/input.mat','file')
+        if strcmp(questdlg('Do you want to continue the previous procedure?','Reload','Yes','No','No'),'Yes')
+        load '.temp/input.mat'
+        else
+            error('Retry by applicable arguments.')
+        end
+    else
+        error('Bad usage, follow the manual.')
+    end
+else
+    %% Error Checking
+    % initial errors
+    if ~exist('FileName','var')
+        error('Please introduce a mod file')
+    end
+    % if ~exist(FileName,'file')
+    %     error([FileName ' doesn''t exist.'])
+    % end
+    if ~exist('Par_Calib','var')
+        error('Please determie the calibration variables and range')
+    end
+    if ~exist('Calib','var')
+        warning('No calibration target specified.')
+        Calib=struct();
+    end
+    if ~exist('Weight','var')
+        warning('The equal weight assigned.')
+        Weight=struct();
+    end
+    % file name errors
+    [~,FileName,~] =fileparts(FileName);
+    
+    % Calib Errors
+    F1={'Var';'ACorr';'SS';'Mean'}; % all needed fields
+    FF=F1(~isfield(Calib,F1));
+    for i=1:size(FF,1)
+        Calib.(FF{i})=nan;
+    end
+    % Weight errors
+    FF=F1(~isfield(Weight,F1));
+    for i=1:size(FF,1)
+        Weight.(FF{i})=1;
+    end
+    clear FF;
+    %% Biuld the necessary files
+    % FileName without Extension
+    eval(['dynare ' FileName '.mod']);
+    close all;
+    load([FileName, '_results.mat']);
+    PC=M_.param_nbr;
+    VC=M_.endo_nbr;
+    
+    %% Second stage error checking base on mod results
+    [FileName,Par_Calib,Calib,Weight]=errHandl(FileName,Par_Calib,Calib,Weight,VC);
+    %%
+    if exist('.temp','dir')
+        rmdir('.temp','s')
+    end
+    mkdir .temp
+    
+    % Extract Calib Parameter % [Min_Par_Calib,Step_Par_Calib,Max_Par_Calib]=
+    GetCalibParam(Par_Calib,M_);
+    % Restructure Dynare file
+    NewFile=writeNew_mFile(FileName);
+    % Create Loop file
+    writeLoopFile(FileName,NewFile,PC);
+    % from this point
+    save '.temp/input.mat' FileName Par_Calib Calib Weight PC
 end
-% if ~exist(FileName,'file')
-%     error([FileName ' doesn''t exist.'])
-% end
-if ~exist('Par_Calib','var')
-    error('Please determie the calibration variables and range')
-end
-if ~exist('Calib','var')
-    warning('No calibration target specified.')
-    Calib=struct();
-end
-if ~exist('Weight','var')
-    warning('The equal weight assigned.')
-    Weight=struct();
-end
-% file name errors
-[~,FileName,~] =fileparts(FileName);
-
-% Calib Errors
-F1={'Var';'ACorr';'SS';'Mean'}; % all needed fields
-FF=F1(~isfield(Calib,F1));
-for i=1:size(FF,1)
-    Calib.(FF{i})=nan;
-end
-% Weight errors
-FF=F1(~isfield(Weight,F1));
-for i=1:size(FF,1)
-    Weight.(FF{i})=1;
-end
-clear FF;
-%% Biuld the necessary files
-% FileName without Extension
-eval(['dynare ' FileName '.mod']);
-close all;
-load([FileName, '_results.mat']);
-PC=M_.param_nbr;
-VC=M_.endo_nbr;
-
-%% Second stage error checking base on mod results
-[FileName,Par_Calib,Calib,Weight]=errHandl(FileName,Par_Calib,Calib,Weight,VC);
-%%
-
-% Extract Calib Parameter % [Min_Par_Calib,Step_Par_Calib,Max_Par_Calib]=
-GetCalibParam(Par_Calib,M_);
-% Restructure Dynare file
-NewFile=writeNew_mFile(FileName);
-% Create Loop file
-writeLoopFile(FileName,NewFile,PC);
 %% Run the Loop File
 rehash
 eval([FileName '_Calib();']);
@@ -241,10 +258,7 @@ init.Min_Par_Calib=Min_Par_Calib;
 init.Step_Par_Calib=Step_Par_Calib;
 init.Max_Par_Calib=Max_Par_Calib;
 itr=0; % it is useful
-if exist('.temp','dir')
-    rmdir('.temp','s')
-end
-mkdir .temp
+
 save '.temp/init.mat' init itr;
 end
 function Opt=SecondBest(Calib,Weight)
@@ -267,52 +281,52 @@ F={F.name};
 % Number of fields
 NF=length(F);%
 h=min(MaxSize,NF);
-NF1=1; 
+NF1=1;
 while(1)
     V=V0;
     W=W0;
-for i=NF1:h
-    load(['.temp/' F{i}]);
-    Res.(['Itr' num2str(i)])=Itr;
-    Res.(['Itr' num2str(i)]).I=i; % Chain to .temp
-    clear Itr;
-end
-
-for i=NF1:h
-      V=[V,[reshape(Res.(['Itr' num2str(i)]).V,[],1); ...
-        reshape(Res.(['Itr' num2str(i)]).A,[],1); ...
-        reshape(Res.(['Itr' num2str(i)]).S,[],1); ...
-        reshape(Res.(['Itr' num2str(i)]).M,[],1)]];
-    %     end
-end
-W(isnan(V(:,1)),:)=[];
-V(isnan(V(:,1)),:)=[];
-V(isnan(W(:,1)),:)=[];
-W(isnan(W(:,1)),:)=[];
-
-V=V-diag(V(:,1))*ones(size(V));
-V(:,1)=[];
-V=V.'*diag(W)*V;
-V=diag(V);
-if length(min(V))>1
-    warning('More than one solution found.');
-end
-%V(V~=min(V))=nan;
-%V(V==min(V))=1;
-
-Fld=fields(Res);
-Fld(V==min(V))=[];
-Res=rmfield(Res,Fld);
-
-if h==NF
-    break;
-else
-    NF1=h+1;
-end
-h=MaxSize+NF;
-if h>NF
-    h=NF;
-end
+    for i=NF1:h
+        load(['.temp/' F{i}]);
+        Res.(['Itr' num2str(i)])=Itr;
+        Res.(['Itr' num2str(i)]).I=i; % Chain to .temp
+        clear Itr;
+    end
+    
+    for i=NF1:h
+        V=[V,[reshape(Res.(['Itr' num2str(i)]).V,[],1); ...
+            reshape(Res.(['Itr' num2str(i)]).A,[],1); ...
+            reshape(Res.(['Itr' num2str(i)]).S,[],1); ...
+            reshape(Res.(['Itr' num2str(i)]).M,[],1)]];
+        %     end
+    end
+    W(isnan(V(:,1)),:)=[];
+    V(isnan(V(:,1)),:)=[];
+    V(isnan(W(:,1)),:)=[];
+    W(isnan(W(:,1)),:)=[];
+    
+    V=V-diag(V(:,1))*ones(size(V));
+    V(:,1)=[];
+    V=V.'*diag(W)*V;
+    V=diag(V);
+    if length(min(V))>1
+        warning('More than one solution found.');
+    end
+    %V(V~=min(V))=nan;
+    %V(V==min(V))=1;
+    
+    Fld=fields(Res);
+    Fld(V==min(V))=[];
+    Res=rmfield(Res,Fld);
+    
+    if h==NF
+        break;
+    else
+        NF1=h+1;
+    end
+    h=MaxSize+NF;
+    if h>NF
+        h=NF;
+    end
 end
 Opt=Res;
 end
