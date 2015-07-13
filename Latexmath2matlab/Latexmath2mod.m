@@ -1,8 +1,8 @@
-function Latex2mod(input)
-% this code is may be ok. but 
+function Latexmath2mod(input)
+% this code is may be ok. but
 % * may be noy abailable all the time
 % / may be not close
-% ^ not 
+% ^ not
 A=fileread(input);
 
 k1=strfind(A,'\[');
@@ -10,24 +10,30 @@ k1=strfind(A,'\[');
 k2=strfind(A,'\]');
 
 k=[k1+2;k2-1].';
-
+B='model;';
 clear k1 k2
-fid=fopen('out.mod','w+');
 for i=1:size(k,1)
-    fprintf(fid,'%s\n',Convertor(A(k(i,1):k(i,2))));
+    B=sprintf('%s\n%s',B,Convertor(A(k(i,1):k(i,2))));
 end
+B=sprintf('%s\n%s',B,'end;');
+
+[C ,C1]=Retriver(B);
+
+B=sprintf('%s\n%s\n\n%s','var',C1,B);
+fid=fopen('out.mod','w+');
+fprintf(fid,'%s\n',B);
 fclose(fid);
 end
 function C=Convertor(B)
 C=B;
 repl={ char(10),  char(13),' ','_{t}','_t', '_{t+1}','\left','\right','\frac','}{' , '{', '}', '[', ']' ,'\',')('; ...
-            '' ,       '' ,'' , ''   , '' , '(+1)'  ,''     ,   ''   ,''     ,')/(', '(', ')', '(', ')' , '',')*('};
+    '' ,       '' ,'' , ''   , '' , '(+1)'  ,''     ,   ''   ,''     ,')/(', '(', ')', '(', ')' , '',')*('};
 for i=1:size(repl,2)
     C = strrep(C, repl{1,i}, repl{2,i});
 end
 
 C=matching_parenthesis(C);
-
+%C=Retriver(C);
 
 C=[C ';'];
 end
@@ -54,7 +60,7 @@ for i=1:size(k,2)
         %k(1,j)=0;
     end
 end
-%Remove closed 
+%Remove closed
 k(:,k(2,:)==-1)=[];
 % set priority
 k(3,:)=k(2,:)-k(1,:);
@@ -64,13 +70,26 @@ k(3,:)=[];
 k=k.';
 for i=1:size(k,1)
     B=D(k(i,1):k(i,2));
-%     D=strfind(B,{'+','-','^','/'})
+    %     D=strfind(B,{'+','-','^','/'})
     if isempty(regexp(B,'+|-|^|/', 'once'))
-       C(k(i,1))=' ';
-       C(k(i,2))=' ';
+        C(k(i,1))=' ';
+        C(k(i,2))=' ';
     else
         D(k(i,1):k(i,2))=repmat('A',1,k(i,2)-k(i,1)+1);
     end
 end
 D=strrep(C, ' ','');
+end
+function [D, E]=Retriver(C)
+
+D = regexp(C,'\w*','match');
+%D(cellfun(@(x) isnumeric(x),D))=[];
+D(~cellfun('isempty', regexp(D, '^-?\d+$')))=[];
+D(1)=[];
+D(end)=[];
+D=cellfun(@(x) [x ', '],D,'uniformoutput',false);
+E=D{1};
+for i=2:length(D)
+    E=[E D{i}];
+end
 end
