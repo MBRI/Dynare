@@ -26,8 +26,8 @@ fclose(fid);
 end
 function C=Convertor(B)
 C=B;
-repl={ char(10),  char(13),' ','_{t}','_t', '_{t+1}','\left','\right','\frac','}{' , '{', '}', '[', ']' ,'\',')('; ...
-    '' ,       '' ,'' , ''   , '' , '(+1)'  ,''     ,   ''   ,''     ,')/(', '(', ')', '(', ')' , '',')*('};
+repl={ char(10),  char(13),' ','_{t}','_t', '_{t+', '_{t-','\left','\right','\frac','}{' , '{', '}', '[', ']' ,'\',')('; ...
+            '' ,       '' ,'' , '{}'   , '' , '{+'  ,'{-'     ,''       ,   ''   ,''     ,')/(', '(', ')', '(', ')' , '',')*('};
 for i=1:size(repl,2)
     C = strrep(C, repl{1,i}, repl{2,i});
 end
@@ -81,13 +81,14 @@ end
 D=strrep(C, ' ','');
 end
 function [D, E]=Retriver(C)
-
+C=strrep(C,'^','_');
 D = regexp(C,'\w*','match');
 %D(cellfun(@(x) isnumeric(x),D))=[];
 D(~cellfun('isempty', regexp(D, '^-?\d+$')))=[];
 D(1)=[];
 D(end)=[];
 D=cellfun(@(x) [x ', '],D,'uniformoutput',false);
+D=unique(D);
 E=D{1};
 for i=2:length(D)
     E=[E D{i}];
