@@ -6,13 +6,13 @@ clc
 FileName='example1.mod';
 
 % Minimum % Step %Maximum
-% Par_Calib(1)={'*=1:0.1:6'};
-Par_Calib(1)={'a=-6:0.1:6'};
+Par_Calib(1)={'*=-6:0.1:6'};
+%Par_Calib(1)={'a=-6:0.1:6'};
 %Par_Calib(2)={'c:-6:0.1:6'};
 
 
 %Variance
-Calib.Var=[0,nan;nan,0];
+Calib.Var=[1,nan;nan,1];
 
 % Variance Weight Matrix
 Weight.Var=[1,1;1,1];
@@ -33,7 +33,7 @@ Weight.Mean=[nan,nan];
 % Weight Vector
 
 % Maximum Itration
-MaxIt=1;
+MaxIt=3;
 Opt=Calibratore(FileName,Par_Calib,Calib,Weight,MaxIt);
 
 

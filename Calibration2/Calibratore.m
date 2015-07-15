@@ -342,8 +342,11 @@ while(1)
     V(isnan(W(:,1)),:)=[];
     W(isnan(W(:,1)),:)=[];
     
+    %Defrence frome Calibrated variance
     V=V-diag(V(:,1))*ones(size(V));
+    % Remove the calibrated variance
     V(:,1)=[];
+    % Loss function
     V=V.'*diag(W)*V;
     V=diag(V);
     if length(min(V))>1
