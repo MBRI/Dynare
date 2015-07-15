@@ -1,0 +1,479 @@
+\[
+{\hat n_t} = \left( {1 - {\delta _n}} \right)\hat n_t^A + {\delta _n}\hat n_t^X
+\]
+
+new mass 
+
+\[
+\hat n_t^E = \frac{1}{{1 + \bar \bar \beta }}\hat n_{t + 1}^E + \frac{{\bar \bar
+\beta }}{{1 + \bar \bar \beta }}{E_t}\hat n_{t + 1}^E + \frac{1}{{{\varphi _E}(1
++ \bar \bar \beta )}}{\hat \tilde v_t}
+\]
+
+
+divined accumulation
+
+\[
+{\hat \tilde v_t} = \bar \bar \beta {v_1}{E_t}{\hat \tilde v_{t + 1}} + \bar
+\bar \beta {v_2}{E_t}{\hat \tilde d_{t + 1}} + \bar \bar \beta ({v_1} +
+{v_2})\hat n_t^A + \bar \bar \beta {v_3}\left( {\hat n_t^X + {E_t}l{{\hat v}_{t +
+1}}} \right) - \left( {{R_t} - {E_t}\pi _{t + 1}^c - r + \varepsilon _t^b}
+\right) - {\hat n_t}
+\]
+
+
+
+\[
+{v_1} = \frac{{{{\tilde v}^{ss}}}}{{\left( {1 - {\delta _n}} \right)\left(
+{{{\tilde d}^{ss}} + {{\tilde v}^{ss}}} \right) + {\delta _n}l{v^{ss}}}}
+\]
+
+
+
+\[
+{v_2} = \frac{{{{\tilde d}^{ss}}}}{{\left( {1 - {\delta _n}} \right)\left(
+{{{\tilde d}^{ss}} + {{\tilde v}^{ss}}} \right) + {\delta _n}l{v^{ss}}}}
+\]
+
+
+
+\[
+{v_3} = \frac{{\frac{{{\delta _n}l{v^{ss}}}}{{\left( {1 - {\delta _n}}
+\right)}}}}{{\left( {1 - {\delta _n}} \right)\left( {{{\tilde d}^{ss}} + {{\tilde
+v}^{ss}}} \right) + {\delta _n}l{v^{ss}}}}
+\]
+
+
+average dividend
+
+
+\[
+{\hat \tilde d_t} = {\hat \tilde y_t} + {\hat \tilde \rho _t} + ({\theta _p} -
+1){\hat \mu _t}
+\]
+
+
+liquidity value
+\[
+l{\hat v_t} = 0
+\]
+
+
+Exit eq.
+
+\[
+\hat n_t^X = {\hat n_t} + \kappa \left( {\frac{{1 - {\delta _n}}}{{{\delta
+_n}}}} \right)\hat z_t^a
+\]
+
+
+idiosyncratic shock break point
+
+
+\[
+\hat z_t^c = \bar \bar \beta {E_t}\hat z_{t + 1}^c + (1 - \bar \bar \beta
+)\left( {{E_t}\hat \tilde m{c_{t + 1}} - {{({\theta _p} - 1)}^{ - 1}}{E_t}{{\hat
+y}_{t + 1}}} \right) + {({\theta _p} - 1)^{ - 1}}\left( {\hat l{v_t} - \bar \bar
+\beta {E_t}\hat l{v_{t + 1}}} \right)
+\]
+
+
+
+relative price
+
+\[
+{\hat \tilde \rho _t} = \frac{1}{{{\theta _p} - 1}}{\hat n_t}
+\]
+
+consumption inflation
+
+\[
+\pi _t^c = {\pi _t} - \frac{1}{{{\theta _p} - 1}}({\hat n_t} - {\hat n_{t - 1}})
+\]
+
+
+total production
+
+\[
+{\hat y_t} = {\hat n_t} + {\hat \tilde \rho _t} + {\hat \tilde y_t}
+\]
+
+
+new Keynzian Philips curve
+
+\[
+{\pi _t} = {\pi ^{ss}} + \frac{{{\lambda _p}}}{{1 + \beta {\lambda _p}}}({\pi
+_{t - 1}} - {\pi ^{ss}}) + \frac{{\bar \bar \beta }}{{1 + \bar \bar \beta
+{\lambda _p}}}({E_t}{\pi _{t + 1}} - {\pi ^{ss}}) - \frac{{{\theta _p} -
+1}}{{{\Psi _p}(1 + \bar \bar \beta {\lambda _p})}}{\hat \tilde \mu _t} +
+\varepsilon _t^p
+\]
+
+
+mark up
+\[
+{\hat \tilde \mu _t} = {\hat \tilde \rho _t} - \hat \tilde m{c_t}
+\]
+
+marginal cost
+\[
+\hat \tilde m{c_t} = (1 - \alpha ){\hat w_t} + \alpha \hat r_t^k - \varepsilon
+_t^a
+\]
+
+consumption eq.
+
+\[
+{\hat c_t} = \frac{{\frac{h}{{1 + \gamma }}}}{{1 + \frac{h}{{1 + \gamma
+}}}}{\hat c_{t - 1}} + \frac{1}{{1 + \frac{h}{{1 + \gamma }}}}{E_t}{\hat c_{t +
+1}} - \frac{{1 - \frac{h}{{1 + \gamma }}}}{{1 + \frac{h}{{1 + \gamma
+}}}}\frac{1}{{{\sigma _c}}}\left( {{R_t} - {E_t}\pi _{t + 1}^c + \varepsilon
+_t^b} \right)
+\]
+
+
+Taylor rule
+
+\[
+{R_t} = R + {\mu _R}({R_{t - 1}} - R) + (1 - {\mu _R})\left[ {{\mu _\pi }\left(
+{{\pi _t} - \pi } \right) + \frac{{{\mu _y}}}{4}\left( {{{\hat y}_t} - \hat
+y_t^p} \right)} \right] + {\mu _{dy}}\left[ {\left( {\left( {{{\hat y}_t} - \hat
+y_t^p} \right) - \left( {{{\hat y}_{t - 1}} - \hat y_{t - 1}^p} \right)} \right)}
+\right] + \varepsilon _t^R
+\]
+
+market clearance
+\[
+{\hat y_t} = \frac{{{c^{ss}}}}{{{y^{ss}}}}{\hat c_t} +
+\frac{{{i^{ss}}}}{{{y^{ss}}}}{\hat i_t} +
+\frac{{{r^{k,ss}}{k^{ss}}}}{{{y^{ss}}}}{\hat u_t} + \varepsilon _t^g
+\]
+
+
+firm production function
+
+\[
+{\hat \tilde y_t} = \alpha {\hat \tilde k_t} + (1 - \alpha ){\hat \tilde l_t} +
+\varepsilon _t^a
+\]
+
+
+Fischer relation
+\[
+{r_t} = {R_t} - {E_t}\pi _{t + 1}^c
+\]
+
+Wage inflation
+\[
+\pi _t^w = {\pi ^w} + \frac{{\bar \bar \beta }}{{1 - {\delta _n}}}{E_t}\left(
+{\pi _{t + 1}^w - {\pi ^{w,ss}} - {\lambda _w}\pi _t^c} \right) + {\lambda _w}\pi
+_{t - 1}^c + \frac{{{\theta _w} - 1}}{{{\Psi _w}}}\left( {m\hat r{s_t} - {{\hat
+w}_t}} \right) + \varepsilon _t^w
+\]
+
+
+MRS l c 
+
+\[
+m\hat r{s_t} = {\sigma _l}{\hat l_t} + {\sigma _c}\left( {\frac{1}{{1 -
+\frac{h}{{1 + \gamma }}}}{{\hat c}_t} - \frac{{\frac{h}{{1 + \gamma }}}}{{1 -
+\frac{h}{{1 + \gamma }}}}{{\hat c}_{t - 1}}} \right)
+\]
+
+
+dynamic of real wage ($\frac{{{W_t}}}{{P_t^C}}$ )
+
+
+\[
+{\hat w_t} = {\hat w_{t - 1}} + \left( {\pi _t^w - {\pi ^{w,ss}}} \right) -
+\left( {\pi _t^c - {\pi ^{c,ss}}} \right)
+\]
+
+
+Labor market eq
+
+\[
+{\hat l_t} = {\hat n_t} + {\hat \tilde l_t}
+\]
+
+
+Capital Market Eq.
+
+\[
+{\hat k_t} = {\hat n_t} + {\hat \tilde k_t}
+\]
+
+Investment
+
+\[
+{\hat i_t} = {i_1}{\hat i_{t - 1}} + (1 - {i_1}){E_t}{\hat i_{t + 1}} +
+{i_2}{\hat q_t} + \varepsilon _t^i
+\]
+
+
+
+\[
+{i_1} = \frac{1}{{1 + \frac{{\bar \bar \beta }}{{1 - {\delta _n}}}}}
+\]
+
+
+
+\[
+{i_2} = \frac{1}{{\left( {1 + \frac{{\bar \bar \beta }}{{1 - {\delta _n}}}}
+\right){\gamma ^2}{\varphi _k}}}
+\]
+
+
+
+\[
+{\hat q_t} = {q_1}{E_t}{\hat q_{t + 1}} + (1 - {q_1}){E_t}\hat r_{t + 1}^k -
+\left( {{R_t} - {E_t}\pi _{t + 1}^c - r - \varepsilon _t^b} \right)
+\]
+
+
+
+\[
+{q_1} = \frac{{1 - {\delta _k}}}{{{r^k} + 1 - {\delta _k}}}
+\]
+
+
+Capital
+
+
+\[
+{\hat k_t} = {k_1}{\hat k_{t - 1}} + (1 - {k_1}){\hat i_t} + {k_2}\varepsilon
+_t^i
+\]
+
+
+where 
+\[
+{k_1} = \frac{{1 - {\delta _n}}}{{1 + \gamma }}
+\]
+
+
+
+\[
+{k_2} = \left( {1 - \frac{{1 - {\delta _n}}}{{1 + \gamma }}} \right)\left( {1 +
+\frac{{\bar \bar \beta }}{{1 - {\delta _n}}}} \right){\left( {1 + \gamma }
+\right)^2}{\varphi _k}
+\]
+
+
+
+
+\[
+{\hat k_t} = {\hat u_t} + {\hat k_{t - 1}}
+\]
+
+
+
+capital utilization
+
+\[
+{\hat u_t} = \left( {\frac{{1 - {\sigma _a}}}{{{\sigma _a}}}} \right)\hat r_t^k
+\]
+
+
+shocks
+
+technology
+
+$\eta _t^a\~N(0,\sigma _a^2)$ \hspace{15pt}
+
+\[
+\varepsilon _t^a = {\rho _a}\varepsilon _{t - 1}^a + \eta _t^a
+\]
+
+risk premium
+
+$\eta _t^b\~N(0,\sigma _b^2)$ \hspace{15pt}
+
+\[
+\varepsilon _t^b = {\rho _b}\varepsilon _{t - 1}^b + \eta _t^b
+\]
+
+monetary policy
+$\eta _t^R\~N(0,\sigma _R^2)$ \hspace{15pt}
+
+\[
+\varepsilon _t^R = {\rho _R}\varepsilon _{t - 1}^R + \eta _t^R
+\]
+
+fiscal 
+$\eta _t^g\~N(0,\sigma _g^2)$ \hspace{15pt}
+
+\[
+\varepsilon _t^g = {\rho _g}\varepsilon _{t - 1}^g + \eta _t^g
+\]
+
+investment
+$\eta _t^i\~N(0,\sigma _i^2)$ \hspace{15pt}
+
+\[
+\varepsilon _t^i = {\rho _i}\varepsilon _{t - 1}^i + \eta _t^i
+\]
+
+price push 
+
+$\eta _t^p\~N(0,\sigma _p^2)$ \hspace{15pt}
+
+\[
+\varepsilon _t^p = {\rho _p}\varepsilon _{t - 1}^p + \eta _t^p
+\]
+
+wage push
+
+$\eta _t^w\~N(0,\sigma _w^2)$ \hspace{15pt}
+
+\[
+\varepsilon _t^w = {\rho _w}\varepsilon _{t - 1}^w + \eta _t^w
+\]
+
+
+Steady State
+
+??? ??? ${z_{\min }} = 1$ ?? ${u^{ss}} = 1$?? (????? ????? ??? ????????
+??????)$a({u^{ss}}) = 0$ ? ${\pi ^{ss}} = 0$??
+
+??? ???? ???? ?? ???? ??????? ???? ??????: $Pa{c^{ss}} = Wa{c^{ss}} = 0$
+
+??? ????? $\beta {\left( {1 + \gamma } \right)^{ - {\sigma _c}}}$  ???? ???
+??????
+
+$\tau $ ?? ???? ?????? ?????? ?? ${n^{ss}} = 1$ ???.
+
+$\Xi $ ?? ???? ?????? ?? ??? ?? ${\tilde l^{ss}} = 1$ ???.
+
+
+\[
+{\tilde z^{ss}} = {\left( {\frac{\kappa }{{\kappa  - ({\theta _p} - 1)}}}
+\right)^{\frac{1}{{{\theta _p} - 1}}}}{z_{\min }}
+\]
+
+
+
+\[
+{n^{E,ss}} = \frac{{1 - {{\left( {\frac{{z_{\min }^{ss}}}{{{z^{C,ss}}}}}
+\right)}^\kappa }}}{{{{\left( {\frac{{z_{\min }^{ss}}}{{{z^{C,ss}}}}}
+\right)}^\kappa }}}{n^{ss}}
+\]
+
+
+
+\[
+{n^A} = {\left( {\frac{{z_{\min }^{ss}}}{{{z^{C,ss}}}}} \right)^\kappa }{n^{ss}}
+\]
+
+
+
+\[
+\frac{{{n^{X,ss}}}}{{{n^{ss}}}} = 1 - {\left( {\frac{{z_{\min
+}^{ss}}}{{{z^{C,ss}}}}} \right)^\kappa } = {\delta _n}
+\]
+
+
+
+\[
+{r^{ss}} = {\beta ^{ - 1}}{\left( {1 + \gamma } \right)^{{\sigma _c}}} - 1
+\]
+
+
+
+\[
+{r^{k,ss}} = {r^{ss}} + {\delta _K}
+\]
+
+
+
+\[
+\begin{array}{l}
+{{\tilde v}^{ss}} = \frac{{\beta {{\left( {1 + \gamma } \right)}^{ - {\sigma
+_c}}}\left( {(1 - {\delta _n}){{\tilde d}^{ss}} + {\delta _n}l{v^{ss}}}
+\right)}}{{1 - \beta {{\left( {1 + \gamma } \right)}^{ - {\sigma _c}}}\left( {1 -
+{\delta _n}} \right)}}\\
+l{v^{ss}} = \frac{{\beta {{\left( {1 + \gamma } \right)}^{ - {\sigma _c}}}\left(
+{1 - {\delta _n}} \right)}}{{1 - \beta {{\left( {1 + \gamma } \right)}^{ -
+{\sigma _c}}}\left( {1 - {\delta _n}} \right)}}{\left( {\frac{{{{\tilde
+z}^{ss}}}}{{{z^{C,ss}}}}} \right)^{1 - {\theta _p}}}{{\tilde d}^{ss}}
+\end{array}
+\]
+
+
+
+\[
+{f^E} = {\tilde v^{ss}}
+\]
+
+
+
+\[
+l{v^{ss}} = (1 - \tau ){f^E}
+\]
+
+
+
+\[
+{y^{ss}} = {c^{ss}} + {i^{ss}} + {\varepsilon ^{g,ss}}
+\]
+
+
+
+\[
+{y^{ss}} = {n^{ss}}{\tilde \rho ^{ss}}{\tilde y^{ss}}
+\]
+
+
+
+\[
+{\tilde \rho ^{ss}} = {\left( {{n^{ss}}} \right)^{\frac{{{\theta _p}}}{{{\theta
+_p} - 1}}}}
+\]
+
+
+
+\[
+{\tilde d^{ss}} = \left( {\frac{1}{{{\theta _p}}}} \right){y^{ss}}
+\]
+
+
+
+\[
+{\tilde y^{ss}} = {\tilde z^{ss}}{\left( {{{\tilde k}^{ss}}} \right)^\alpha
+}{({\tilde l^{ss}})^{1 - \alpha }}
+\]
+
+
+
+\[
+\tilde m{c^{ss}} = \frac{{{\theta _p} - 1}}{{{\theta _p}}}
+\]
+
+
+
+\[
+\frac{1}{{{{\tilde z}^{ss}}}}{\left( {\frac{{{w^{ss}}}}{{1 - \alpha }}}
+\right)^{1 - \alpha }}{\left( {\frac{{{r^{k,ss}}}}{\alpha }} \right)^\alpha } =
+\tilde m{c^{ss}}
+\]
+
+
+
+\[
+{w^{ss}} = \frac{{{\theta _w}}}{{{\theta _w} - 1}}\frac{{\Xi {{\left(
+{{n^{ss}}{{\tilde l}^{ss}}} \right)}^{{\sigma _l}}}}}{{{{\left( {{c^{ss}} + h{{(1
++ \gamma )}^{ - 1}}{c^{ss}}} \right)}^{ - {\sigma _c}}}}}
+\]
+
+
+
+\[
+{\tilde k^{ss}} = {\left( {\frac{{\alpha \tilde m{c^{ss}}{{\tilde
+z}^{ss}}}}{{{r^{k,ss}}}}} \right)^{\frac{1}{{1 - \alpha }}}}
+\]
+
+
+
+\[
+{i^{ss}} = (\gamma  + {\delta _k}){n^{ss}}{\tilde k^{ss}}
+\]
