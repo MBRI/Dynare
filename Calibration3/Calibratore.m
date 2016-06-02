@@ -1,9 +1,9 @@
 
 function [Opt]=Calibratore(FileName,Par_Calib,Calib,Weight,MaxIt)
 % this file is developed to simplify the handy calibration
-% this generate loops to find a 2nd best calibration because the 1 best one
-% is not accessible. the inaccesibility come from the geometric progression
-% nature of the problems
+% the snd attemp was not good enuagh so i decided to generate randome
+% numbers for each parameters and build a big sample to explore the
+% behavire of the outcomes of model
 if nargin==0
     if exist('.temp/input.mat','file')
         if strcmp(questdlg('Do you want to continue the previous procedure?','Reload','Yes','No','No'),'Yes')
@@ -73,7 +73,7 @@ else
     % Restructure Dynare file
     NewFile=writeNew_mFile(FileName);
     % Create Loop file
-    writeLoopFile(FileName,NewFile,PC,MaxIt);
+    writeModFile(FileName,NewFile,PC,MaxIt);
     % from this point
     save '.temp/input.mat' FileName Par_Calib Calib Weight PC
 end
@@ -86,24 +86,25 @@ clearvars -except Calib  Weight
 % find the Best option
 Opt=SecondBest(Calib,Weight);
 end
-function writeLoopFile(FileName,NewFile,PC,MaxIt)
+function writeModFile(FileName,NewFile,PC,MaxIt)
 %Remove previous file
-if exist([FileName '_Calib.m'],'file')
-    delete([FileName '_Calib.m']);
+if exist([FileName '_Cal.m'],'file')
+    delete([FileName '_Cal.m']);
 end
-fid=fopen([FileName '_Calib.m'],'w+');
-fprintf(fid,'%s\n',['function ' FileName '_Calib()']);%Min_Par_Calib,Step_Par_Calib,Max_Par_Calib
-fprintf(fid,'%s\n','global oo_');
+fid=fopen([FileName '_Cal.m'],'w+');
+%fprintf(fid,'%s\n',['function ' FileName '_Calib()']);%Min_Par_Calib,Step_Par_Calib,Max_Par_Calib
+%fprintf(fid,'%s\n','global oo_');
 % Load init and input values
-fprintf(fid,'%s\n','load ''.temp/init.mat'';');
-fprintf(fid,'%s\n','load ''.temp/input.mat'';');
+%fprintf(fid,'%s\n','load ''.temp/init.mat'';');
+%fprintf(fid,'%s\n','load ''.temp/input.mat'';');
 
 %assighn parameter
-fprintf(fid,'%s\n','Min_Par_Calib=init.Min_Par_Calib;');
-fprintf(fid,'%s\n','Step_Par_Calib=init.Step_Par_Calib;');
-fprintf(fid,'%s\n','Max_Par_Calib=init.Max_Par_Calib;');
-fprintf(fid,'%s\n','');
+%fprintf(fid,'%s\n','Min_Par_Calib=init.Min_Par_Calib;');
+%fprintf(fid,'%s\n','Step_Par_Calib=init.Step_Par_Calib;');
+%fprintf(fid,'%s\n','Max_Par_Calib=init.Max_Par_Calib;');
+%fprintf(fid,'%s\n','');
 % clear vars
+%{
 fprintf(fid,'%s\n','clear init FileName Par_Calib;');
 
 %Calc Total Itration ## it is wrong and need to modify
@@ -190,13 +191,13 @@ fprintf(fid,'%s\n','end');
 fprintf(fid,'%s\n','close (h)');
 %End of Loop Function
 fprintf(fid,'%s\n','end');
-
+%}
 %Put Dynare f.m Function
 fprintf(fid,'%s\n',NewFile);
 
 %Put thirdBest Function
-ThirdBest=['function Opt=ThirdBest(Calib,Weight,itrS,itr,VarId)' char(13) '' char(10) 'MaxSize=1000;' char(13) '' char(10) '% Clibration Vaues' char(13) '' char(10) 'V0=[reshape(Calib.Var,[],1); ...' char(13) '' char(10) '    reshape(Calib.ACorr,[],1); ...' char(13) '' char(10) '    reshape(Calib.SS,[],1); ...' char(13) '' char(10) '    reshape(Calib.Mean,[],1)];' char(13) '' char(10) '% Weight Matrix' char(13) '' char(10) 'W0=[reshape(Weight.Var,[],1); ...' char(13) '' char(10) '    reshape(Weight.ACorr,[],1); ...' char(13) '' char(10) '    reshape(Weight.SS,[],1); ...' char(13) '' char(10) '    reshape(Weight.Mean,[],1)];' char(13) '' char(10) '' char(13) '' char(10) '% Load data files' char(13) '' char(10) '%F=dir(''.temp/Itr*.mat'');' char(13) '' char(10) '%F={F.name};' char(13) '' char(10) 'Res=struct();' char(13) '' char(10) '% Number of fields' char(13) '' char(10) 'NF=itr-itrS+1;%' char(13) '' char(10) 'h=min(itrS+MaxSize,NF);' char(13) '' char(10) 'NF1=itrS;' char(13) '' char(10) 'while(1)' char(13) '' char(10) '    V=V0;' char(13) '' char(10) '    W=W0;' char(13) '' char(10) '    for i=NF1:h' char(13) '' char(10) '        try' char(13) '' char(10) '        load([''.temp/Itr'' num2str(i)]);' char(13) '' char(10) '        ' char(13) '' char(10) '        Res.([''Itr'' num2str(i)])=Itr;' char(13) '' char(10) '        %Res.([''Itr'' num2str(i)]).I=i; % Chain to .temp' char(13) '' char(10) '        clear Itr;' char(13) '' char(10) '        end' char(13) '' char(10) '    end' char(13) '' char(10) '    ' char(13) '' char(10) '    Fld=fields(Res);' char(13) '' char(10) '   if ~isempty(Fld)' char(13) '' char(10) '    for i=NF1:h' char(13) '' char(10) '        V=[V,[reshape(Res.([''Itr'' num2str(i)]).V,[],1); ...' char(13) '' char(10) '            reshape(Res.([''Itr'' num2str(i)]).A,[],1); ...' char(13) '' char(10) '            reshape(Res.([''Itr'' num2str(i)]).S,[],1); ...' char(13) '' char(10) '            reshape(Res.([''Itr'' num2str(i)]).M,[],1)]];' char(13) '' char(10) '        %     end' char(13) '' char(10) '    end' char(13) '' char(10) '    W(isnan(V(:,1)),:)=[];' char(13) '' char(10) '    V(isnan(V(:,1)),:)=[];' char(13) '' char(10) '    V(isnan(W(:,1)),:)=[];' char(13) '' char(10) '    W(isnan(W(:,1)),:)=[];' char(13) '' char(10) '    ' char(13) '' char(10) '    V=V-diag(V(:,1))*ones(size(V));' char(13) '' char(10) '    V(:,1)=[];' char(13) '' char(10) '    V=V.''*diag(W)*V;' char(13) '' char(10) '    V=diag(V);' char(13) '' char(10) '    %if length(min(V))>1' char(13) '' char(10) '    %    warning(''More than one solution found.'');' char(13) '' char(10) '    %end' char(13) '' char(10) '    %V(V~=min(V))=nan;' char(13) '' char(10) '    %V(V==min(V))=1;' char(13) '' char(10) '    ' char(13) '' char(10) '    Fld(V==min(V))=[];' char(13) '' char(10) '    Res=rmfield(Res,Fld);' char(13) '' char(10) '   end' char(13) '' char(10) '    if h==NF' char(13) '' char(10) '        break;' char(13) '' char(10) '    else' char(13) '' char(10) '        NF1=h+1;' char(13) '' char(10) '    end' char(13) '' char(10) '    h=MaxSize+NF;' char(13) '' char(10) '    if h>NF' char(13) '' char(10) '        h=NF;' char(13) '' char(10) '    end' char(13) '' char(10) 'end' char(13) '' char(10) 'Fld=fields(Res);' char(13) '' char(10) 'if isempty(Fld)' char(13) '' char(10) '    Opt=nan;' char(13) '' char(10) 'else' char(13) '' char(10) 'Opt=Res.(Fld{1}).P(VarId);' char(13) '' char(10) 'end' char(13) '' char(10) '' char(13) '' char(10) 'end'];
-fprintf(fid,'%s\n',ThirdBest);
+%ThirdBest=['function Opt=ThirdBest(Calib,Weight,itrS,itr,VarId)' char(13) '' char(10) 'MaxSize=1000;' char(13) '' char(10) '% Clibration Vaues' char(13) '' char(10) 'V0=[reshape(Calib.Var,[],1); ...' char(13) '' char(10) '    reshape(Calib.ACorr,[],1); ...' char(13) '' char(10) '    reshape(Calib.SS,[],1); ...' char(13) '' char(10) '    reshape(Calib.Mean,[],1)];' char(13) '' char(10) '% Weight Matrix' char(13) '' char(10) 'W0=[reshape(Weight.Var,[],1); ...' char(13) '' char(10) '    reshape(Weight.ACorr,[],1); ...' char(13) '' char(10) '    reshape(Weight.SS,[],1); ...' char(13) '' char(10) '    reshape(Weight.Mean,[],1)];' char(13) '' char(10) '' char(13) '' char(10) '% Load data files' char(13) '' char(10) '%F=dir(''.temp/Itr*.mat'');' char(13) '' char(10) '%F={F.name};' char(13) '' char(10) 'Res=struct();' char(13) '' char(10) '% Number of fields' char(13) '' char(10) 'NF=itr-itrS+1;%' char(13) '' char(10) 'h=min(itrS+MaxSize,NF);' char(13) '' char(10) 'NF1=itrS;' char(13) '' char(10) 'while(1)' char(13) '' char(10) '    V=V0;' char(13) '' char(10) '    W=W0;' char(13) '' char(10) '    for i=NF1:h' char(13) '' char(10) '        try' char(13) '' char(10) '        load([''.temp/Itr'' num2str(i)]);' char(13) '' char(10) '        ' char(13) '' char(10) '        Res.([''Itr'' num2str(i)])=Itr;' char(13) '' char(10) '        %Res.([''Itr'' num2str(i)]).I=i; % Chain to .temp' char(13) '' char(10) '        clear Itr;' char(13) '' char(10) '        end' char(13) '' char(10) '    end' char(13) '' char(10) '    ' char(13) '' char(10) '    Fld=fields(Res);' char(13) '' char(10) '   if ~isempty(Fld)' char(13) '' char(10) '    for i=NF1:h' char(13) '' char(10) '        V=[V,[reshape(Res.([''Itr'' num2str(i)]).V,[],1); ...' char(13) '' char(10) '            reshape(Res.([''Itr'' num2str(i)]).A,[],1); ...' char(13) '' char(10) '            reshape(Res.([''Itr'' num2str(i)]).S,[],1); ...' char(13) '' char(10) '            reshape(Res.([''Itr'' num2str(i)]).M,[],1)]];' char(13) '' char(10) '        %     end' char(13) '' char(10) '    end' char(13) '' char(10) '    W(isnan(V(:,1)),:)=[];' char(13) '' char(10) '    V(isnan(V(:,1)),:)=[];' char(13) '' char(10) '    V(isnan(W(:,1)),:)=[];' char(13) '' char(10) '    W(isnan(W(:,1)),:)=[];' char(13) '' char(10) '    ' char(13) '' char(10) '    V=V-diag(V(:,1))*ones(size(V));' char(13) '' char(10) '    V(:,1)=[];' char(13) '' char(10) '    V=V.''*diag(W)*V;' char(13) '' char(10) '    V=diag(V);' char(13) '' char(10) '    %if length(min(V))>1' char(13) '' char(10) '    %    warning(''More than one solution found.'');' char(13) '' char(10) '    %end' char(13) '' char(10) '    %V(V~=min(V))=nan;' char(13) '' char(10) '    %V(V==min(V))=1;' char(13) '' char(10) '    ' char(13) '' char(10) '    Fld(V==min(V))=[];' char(13) '' char(10) '    Res=rmfield(Res,Fld);' char(13) '' char(10) '   end' char(13) '' char(10) '    if h==NF' char(13) '' char(10) '        break;' char(13) '' char(10) '    else' char(13) '' char(10) '        NF1=h+1;' char(13) '' char(10) '    end' char(13) '' char(10) '    h=MaxSize+NF;' char(13) '' char(10) '    if h>NF' char(13) '' char(10) '        h=NF;' char(13) '' char(10) '    end' char(13) '' char(10) 'end' char(13) '' char(10) 'Fld=fields(Res);' char(13) '' char(10) 'if isempty(Fld)' char(13) '' char(10) '    Opt=nan;' char(13) '' char(10) 'else' char(13) '' char(10) 'Opt=Res.(Fld{1}).P(VarId);' char(13) '' char(10) 'end' char(13) '' char(10) '' char(13) '' char(10) 'end'];
+%fprintf(fid,'%s\n',ThirdBest);
 
 fclose(fid);
 
