@@ -34,7 +34,8 @@ Weight.Mean=[nan,nan];
 
 % Maximum Itration
 MaxIt=3;
-Opt=Calibratore(FileName,Par_Calib,Calib,Weight,MaxIt);
+%Opt=
+Calibratore(FileName,Par_Calib,Calib,Weight,MaxIt);
 
 
 % Clear Extra Var

@@ -79,19 +79,20 @@ else
 end
 %% Run the Loop File
 rehash % Refresh the files in order to recognize new file by matlab
-eval([FileName '_Calib();']);
+%eval([FileName '_Calib();']);
+Gen_Sample(); % generate Samples
 %Clean Extra files
 cleanup(FileName);
 clearvars -except Calib  Weight
 % find the Best option
-Opt=SecondBest(Calib,Weight);
+%Opt=SecondBest(Calib,Weight);
 end
 function writeModFile(FileName,NewFile,PC,MaxIt)
 %Remove previous file
-if exist([FileName '_Cal.m'],'file')
-    delete([FileName '_Cal.m']);
+if exist(['Temp_Cal.m'],'file')
+    delete(['Temp_Cal.m']);
 end
-fid=fopen([FileName '_Cal.m'],'w+');
+fid=fopen(['Temp_Cal.m'],'w+');
 %fprintf(fid,'%s\n',['function ' FileName '_Calib()']);%Min_Par_Calib,Step_Par_Calib,Max_Par_Calib
 %fprintf(fid,'%s\n','global oo_');
 % Load init and input values
@@ -229,40 +230,6 @@ NewFile=strrep(NewFile,'global_initialization;',['global_initialization;' char(1
 
 % End the created function
 NewFile=sprintf('%s \n %s',NewFile,'end ');
-end
-function [] = cleanup(fname)
-% Cleans up files no longer required once a .MOD file has been executed by DYNARE
-% Dirk Muir, Jan 2012
-close all;
-%
-
-warning off all;
-delete([fname, '_static.m']);
-delete([fname, '_dynamic.m']);
-delete([fname, '_dynamic.bin']);
-delete([fname, '_dynamic.cod']);
-delete([fname, '_set_auxiliary_variables.m']);
-delete([fname, '_static.bin']);
-delete([fname, '_static.cod']);
-delete([fname, '.log']);
-delete([fname, '.m']);
-delete([fname, '_results.mat']);
-delete([fname, '.log']);
-delete([fname, '*.eps']);
-delete([fname, '*.asv']);
-delete([fname, '_Calib.m']);
-rmdir(fname,'s');
-%delete([fname, '_results.mat']);
-%mkdir('dynarefiles');
-%movefile([fname, '.m'], 'dynarefiles', 'f');
-%movefile([fname, '.log'], 'dynarefiles', 'f');
-
-%mkdir('calib');
-%movefile([fname, '_results.mat'], 'calib', 'f');
-
-%rmdir(fname, 's');
-
-warning on all;
 end
 function GetCalibParam(Par_Calib0,M)
 %[Min_Par_Calib,Step_Par_Calib,Max_Par_Calib]=
