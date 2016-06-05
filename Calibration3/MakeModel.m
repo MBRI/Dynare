@@ -11,7 +11,12 @@ S_G=[];% Collection of Simulated Goal outcomes
 Flds=cellstr(ls('.temp\Itr*.mat'));
 n_P=length(names); % Number of parameters
 n_O=length(Flds); % number of simulated observations
-
+if n_O<2
+    clear
+    clc
+    close all
+   error('No solution found in the specified range'); 
+end
 h = waitbar(0/n_O,'Collect Data...');
 % Gather data
 for i=1:n_O
@@ -36,7 +41,7 @@ for d=15:-1:1 % find the biggest degree of polynominal to fit
         break;
     end
 end
-
+close (h)
 Fitted=struct();
 sym Sm;
 h = waitbar(0/n_G,'Fit Data...');
@@ -59,7 +64,8 @@ x=symvar(Sm);%Find Symbolic Var names
 options = optimoptions('fminunc','Display','final','Algorithm','quasi-newton','MaxFunctionEvaluations',1000);
 fh2 = matlabFunction(f,'vars',{x});
 % fh2 = objective with no gradient or Hessian
-[xfinal,fval,exitflag,output2] = fminunc(fh2,[1,2,1,1],options);
+[xfinal,fval,exitflag,output2] = fminunc(fh2,zeros(1,n_P),options);
+xfinal
 %{
 gradf = jacobian(Sm,x).'; % column gradf
 V=solve(gradf);% 

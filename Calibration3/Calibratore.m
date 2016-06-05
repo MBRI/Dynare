@@ -75,9 +75,9 @@ else
     % Create Loop file
     writeModFile(FileName,NewFile,PC,MaxIt);
     % from this point
-    save '.temp/input.mat' FileName Par_Calib Calib Weight PC
+    save '.temp/input.mat' FileName Par_Calib Calib Weight PC MaxIt
     %Clean Extra files
-    cleanup(FileName);
+    %cleanup(FileName);
     clearvars -except Calib  Weight
 
 end
