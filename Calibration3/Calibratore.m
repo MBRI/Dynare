@@ -76,16 +76,17 @@ else
     writeModFile(FileName,NewFile,PC,MaxIt);
     % from this point
     save '.temp/input.mat' FileName Par_Calib Calib Weight PC
+    %Clean Extra files
+    cleanup(FileName);
+    clearvars -except Calib  Weight
+
 end
-%% Run the Loop File
+%% Run the Gen File
 rehash % Refresh the files in order to recognize new file by matlab
-%eval([FileName '_Calib();']);
 Gen_Sample(); % generate Samples
-%Clean Extra files
-cleanup(FileName);
-clearvars -except Calib  Weight
 % find the Best option
-%Opt=SecondBest(Calib,Weight);
+%Opt=MakeModel();
+MakeModel;
 end
 function writeModFile(FileName,NewFile,PC,MaxIt)
 %Remove previous file
@@ -209,7 +210,7 @@ PC=length(M_.params);
 Originalfile = fileread([FileName, '.m']);
 NewFile='';
 %NewFile=sprintf('%s1 \n %s2','newpage','mine');
-NewFile=sprintf('%s\n',['function ' FileName '_Cal(Par_Calib)']);
+NewFile=sprintf('%s\n',['function Temp_Cal(Par_Calib)']);
 
 NewFile=sprintf('%s \n %s',NewFile,Originalfile);
 

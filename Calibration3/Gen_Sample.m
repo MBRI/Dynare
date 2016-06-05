@@ -8,7 +8,7 @@ Min_Par_Calib=init.Min_Par_Calib;
 Max_Par_Calib=init.Max_Par_Calib;
 
 clear init FileName Par_Calib;
-Total_itration=3000;%ceil((Max_Par_Calib-Min_Par_Calib)./Step_Par_Calib);
+Total_itration=1000;%ceil((Max_Par_Calib-Min_Par_Calib)./Step_Par_Calib);
 %Total_itration= 3*sum(Total_itration);
 
 %if exist('.temp/LVal.mat','file')
@@ -24,7 +24,7 @@ for itr=1:Total_itration
     
     
     waitbar(itr / Total_itration)
-    try %#ok<TRYNC>
+    try
         Temp_Cal(Par_Calib);
         %Itr.V=oo_.var;
         %Itr.A=oo_.autocorr{1};
@@ -34,11 +34,13 @@ for itr=1:Total_itration
         Itr.P=Par_Calib;
         save (['.temp/Itr' num2str(itr) '.mat'], 'Itr')
         clear Itr
+    catch
+        
     end
 end
 save ('.temp/M_.mat', 'M_')
 close (h)
-
+cleanup(M_.fname);
 clear
 clc
 end

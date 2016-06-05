@@ -6,7 +6,7 @@ clc
 FileName='example1.mod';
 
 % Minimum % Step %Maximum
-Par_Calib(1)={'*=-6:0.1:6'};
+Par_Calib(1)={'*=-10:0.1:10'};
 %Par_Calib(1)={'a=-6:0.1:6'};
 %Par_Calib(2)={'c:-6:0.1:6'};
 
@@ -36,7 +36,5 @@ Weight.Mean=[nan,nan];
 MaxIt=3;
 %Opt=
 Calibratore(FileName,Par_Calib,Calib,Weight,MaxIt);
-
-
 % Clear Extra Var
-clearvars -except Opt
+%clearvars -except Opt

@@ -18,7 +18,7 @@ delete([fname, '_results.mat']);
 delete([fname, '.log']);
 delete([fname, '*.eps']);
 delete([fname, '*.asv']);
-delete('Temp_Cal.m');
+%delete('Temp_Cal.m');
 rmdir(fname,'s');
 %delete([fname, '_results.mat']);
 %mkdir('dynarefiles');
