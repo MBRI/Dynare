@@ -19,8 +19,11 @@ delete([fname, '.log']);
 delete([fname, '*.eps']);
 delete([fname, '*.asv']);
 delete('Temp_Cal.m');
-%rmdir(fname,'s');
-%delete([fname, '_results.mat']);
+try
+rmdir(fname,'s');
+end
+delete([fname, '_results.mat']);
+
 %mkdir('dynarefiles');
 %movefile([fname, '.m'], 'dynarefiles', 'f');
 %movefile([fname, '.log'], 'dynarefiles', 'f');

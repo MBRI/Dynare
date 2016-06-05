@@ -11,11 +11,12 @@ S_G=[];% Collection of Simulated Goal outcomes
 Flds=cellstr(ls('.temp\Itr*.mat'));
 n_P=length(names); % Number of parameters
 n_O=length(Flds); % number of simulated observations
-if n_O<2
+
+if n_O<5
     clear
     clc
     close all
-   error('No solution found in the specified range'); 
+   error('No sufficient solutions found in the specified range'); 
 end
 h = waitbar(0/n_O,'Collect Data...');
 % Gather data

@@ -7,7 +7,7 @@ load '.temp/input.mat'; % include MaxIt
 Min_Par_Calib=init.Min_Par_Calib;
 %Step_Par_Calib=init.Step_Par_Calib;
 Max_Par_Calib=init.Max_Par_Calib;
-
+n_o=0;
 clear init FileName Par_Calib;
 
 %if exist('.temp/LVal.mat','file')
@@ -31,15 +31,16 @@ for itr=1:MaxIt
         Itr.oo_=oo_;
         Itr.P=Par_Calib(:,itr);
         save (['.temp/Itr' num2str(itr) '.mat'], 'Itr')
-        clear Itr
-    catch
-        
+        clear Itr 
+        n_o=n_o+1;
     end
 end
 save ('.temp/M_.mat', 'M_')
 close (h)
 cleanup(M_.fname);
-clear
-clc
+
+clc;
+disp([num2str(n_o) ' valid points has been found from ' num2str(MaxIt) ' attempts.']);
+clear;
 end
 
