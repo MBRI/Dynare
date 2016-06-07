@@ -3,35 +3,20 @@ close all
 clc
 %persistent FileName Par_Calib Var_Calib
 
-FileName='example1.mod';
+FileName='example0.mod';
 
 % Minimum % Step %Maximum
-Par_Calib(1)={'*=-5:0.1:5'};
-%Par_Calib(1)={'a=-6:0.1:6'};
-%Par_Calib(2)={'c:-6:0.1:6'};
+Par_Calib(1)={'*=-100:100'};
+%Par_Calib(1)={'a=-6:6'};
+%Par_Calib(2)={'c:-6:6'};
+
+% Calib=  an Structure Like oo_
+Calib.var=0;
+%Calib.Var=[1,nan;nan,1];
 
 
-%Variance
-Calib.Var=[1,nan;nan,1];
-
-% Variance Weight Matrix
-Weight.Var=[1,1;1,1];
-%Auto Correlatoin of 1 lag 
-Calib.ACorr=[nan,nan;nan,nan];
-Weight.ACorr=[1,1;1,1];
-% Wieght Matrix
-
-% Steady State 
-Calib.SS=[nan,nan];
-Weight.SS=[1,1];
-
-% Wieght Matrix
-
-% Steady State 
-%Calib.Mean=[nan,nan];
-Weight.Mean=[nan,nan];
-% Weight Vector
-
+% Weight=  an Structure Like oo_
+Weight.var=0;
 % Maximum Itration
 MaxIt=300;
 %Opt=

@@ -66,6 +66,7 @@ options = optimoptions('fminunc','Display','final','Algorithm','quasi-newton','M
 fh2 = matlabFunction(f,'vars',{x});
 % fh2 = objective with no gradient or Hessian
 [xfinal,fval,exitflag,output2] = fminunc(fh2,zeros(1,n_P),options);
+char(x)
 xfinal
 %{
 gradf = jacobian(Sm,x).'; % column gradf

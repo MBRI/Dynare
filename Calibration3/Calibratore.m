@@ -219,7 +219,7 @@ NewFile=strrep(NewFile,'clear all','');
 
 % BuildUp .m file to function
 for i=1:PC
-    NewFile=strrep(NewFile,['M_.params( ' num2str(i) ' ) = ' num2str(M_.params(i))],['M_.params( ' num2str(i) ' ) = Par_Calib(' num2str(i) ')']);
+    NewFile=strrep(NewFile,['M_.params(' num2str(i) ') = ' num2str(M_.params(i))],['M_.params(' num2str(i) ') = Par_Calib(' num2str(i) ')']);
 end
 % Clear All Print Options
 NewFile=strrep(NewFile,'options_.noprint','% options_.noprint');
@@ -236,7 +236,8 @@ function GetCalibParam(Par_Calib0,M)
 %[Min_Par_Calib,Step_Par_Calib,Max_Par_Calib]=
 Par_Calib0=strrep(Par_Calib0,'=',':');
 %Par_Calib=cellfun(@(x) strsplit(x,':'),Par_Calib0,'UniformOutput' , false);
-Cal={'','','',''};
+%Cal={'','','',''};
+Cal={'','',''};
 for i=1:size(Par_Calib0,1)
     try
         Cal=[Cal;strsplit(Par_Calib0{i},':')];
@@ -252,26 +253,26 @@ if strcmp(Par_Calib0{1},'*')
 end
 % Par_Calib=cellstr(M.param_names);
 Min_Par_Calib=M.params;
-Step_Par_Calib=ones(size(Min_Par_Calib,1),1);
+%Step_Par_Calib=ones(size(Min_Par_Calib,1),1);
 Max_Par_Calib=M.params;
 for i=1:length(Par_Calib)
     Cal=Par_Calib0(strcmp(Par_Calib0(:,1),Par_Calib(i)),:);
     if ~isempty(Cal)
         Min_Par_Calib(i)=str2double(Cal{2});
-        Step_Par_Calib(i)=str2double(Cal{3});
-        Max_Par_Calib(i)=str2double(Cal{4});
+        %Step_Par_Calib(i)=str2double(Cal{3});
+        Max_Par_Calib(i)=str2double(Cal{3});%{4}
     end
 end
 
 %for i=1:length(Par_Calib)
 init.Min_Par_Calib=Min_Par_Calib;
-init.Step_Par_Calib=Step_Par_Calib;
+%init.Step_Par_Calib=Step_Par_Calib;
 init.Max_Par_Calib=Max_Par_Calib;
 itr=0; % it is useful
 
 save '.temp/init.mat' init itr;
 end
-function Opt=SecondBest(Calib,Weight)
+function Opt=SecondBest(Calib,Weight) % Redundent
 MaxSize=1000;
 % Clibration Vaues
 V0=[reshape(Calib.Var,[],1); ...
@@ -343,7 +344,7 @@ while(1)
 end
 Opt=RemDuplicate(Res);
 end
-function out=RemDuplicate(Inp)
+function out=RemDuplicate(Inp)% Redundent
 Fld=fields(Inp);
 if isempty(Fld)
     out=Inp;

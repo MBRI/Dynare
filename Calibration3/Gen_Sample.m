@@ -33,13 +33,16 @@ for itr=1:MaxIt
         save (['.temp/Itr' num2str(itr) '.mat'], 'Itr')
         clear Itr 
         n_o=n_o+1;
+    catch er 
+        warning('one try is missed');
+        warning(er.message)
     end
 end
 save ('.temp/M_.mat', 'M_')
 close (h)
 cleanup(M_.fname);
 
-clc;
+home;
 disp([num2str(n_o) ' valid points has been found from ' num2str(MaxIt) ' attempts.']);
 clear;
 end
