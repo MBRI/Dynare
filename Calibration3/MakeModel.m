@@ -69,8 +69,8 @@ fh2 = matlabFunction(f,'vars',{x});
 char(x)
 xfinal
 %{
-gradf = jacobian(Sm,x).'; % column gradf
-V=solve(gradf);% 
+gradf = jacobian(f,x).'; % column gradf
+%V=solve(gradf);% 
 hessf = jacobian(gradf,x);
 fh = matlabFunction(Sm,gradf,hessf,'vars',{x});
 options = optimoptions('fminunc', ...
