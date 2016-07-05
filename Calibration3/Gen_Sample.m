@@ -38,7 +38,7 @@ for itr=1:MaxIt
         warning(er.message)
     end
 end
-save ('.temp/M_.mat', 'M_')
+
 close (h)
 cleanup(M_.fname);
 

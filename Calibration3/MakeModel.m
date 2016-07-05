@@ -2,8 +2,9 @@
 % Load & Store name of parameters
 load('.temp\M_.mat');
 names=cellstr(M_.param_names);
+StartingPoint=M_.params.';
 clear M_
-
+load('.temp\init.mat');
 %% Make Collections
 S_P=[]; % Collection of Simulated Parametes
 S_G=[];% Collection of Simulated Goal outcomes
@@ -62,24 +63,42 @@ close (h)
 f=Sm.'*eye(n_G)*Sm;
 x=symvar(Sm);%Find Symbolic Var names
 
-options = optimoptions('fminunc','Display','final','Algorithm','quasi-newton','MaxFunctionEvaluations',1000);
+
+options = optimoptions('fminunc','Display','final','Algorithm','quasi-newton', 'OptimalityTolerance',10^-20,'MaxFunctionEvaluations',1000);
 fh2 = matlabFunction(f,'vars',{x});
 % fh2 = objective with no gradient or Hessian
-[xfinal,fval,exitflag,output2] = fminunc(fh2,zeros(1,n_P),options);
-char(x)
-xfinal
+%[xfinal,fval,exitflag,output2] = fminunc(fh2,StartingPoint,options);
+%}
+options = optimoptions(@fmincon,'Algorithm','interior-point');
+
+problem = createOptimProblem('fmincon','objective',...
+ fh2,'x0',StartingPoint,'lb',init.Min_Par_Calib,'ub',init.Max_Par_Calib,'options',options); %   
+gs = GlobalSearch;
+disp('Solving started');
+xfinal = run(gs,problem);
 %{
 gradf = jacobian(f,x).'; % column gradf
 %V=solve(gradf);% 
 hessf = jacobian(gradf,x);
-fh = matlabFunction(Sm,gradf,hessf,'vars',{x});
-options = optimoptions('fminunc', ...
+fh = matlabFunction(f,gradf,hessf,'vars',{x});
+options = optimoptions('fminunc', 'OptimalityTolerance',10^-20, 'MaxFunctionEvaluations',10^15,'StepTolerance', 10^-20,...
     'SpecifyObjectiveGradient', true, ...
     'HessianFcn', 'objective', ...
     'Algorithm','trust-region', ...
     'Display','final');
-[xfinal,fval,exitflag,output] = fminunc(fh,[1,1,1,1],options);
+[xfinal,fval,exitflag,output] = fminunc(fh,StartinPoint,options);
 %}
+
+% reshape results
+Res=dataset();
+Res.Parameter=repmat({''},n_P,1);
+Res.Value=zeros(n_P,1);
+for i=1:n_P
+    Res.Parameter{i}=char(x(i));
+    Res.Value(i)=xfinal(i);
+end
+Res
+
 %%
 %if exist('sympoly') == 2
 %  polyn2sympoly(P)

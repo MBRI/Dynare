@@ -6,19 +6,24 @@ clc
 FileName='example0.mod';
 
 % Minimum % Step %Maximum
-Par_Calib(1)={'*=-100:100'};
+Par_Calib(1)={'*=-10:10'};
 %Par_Calib(1)={'a=-6:6'};
 %Par_Calib(2)={'c:-6:6'};
 
 % Calib=  an Structure Like oo_
-Calib.var=0;
-%Calib.Var=[1,nan;nan,1];
-
+% just create fiels do you wnat to be considered in calibration
+% use nan for unimporatant values
+load('input\C.mat')
+%Calib.var=[1,nan;nan,1];
+%Calib.autocorr{1,1}=[nan,nan;nan,nan];
+%Calib.autocorr{1,2}=[nan,nan;nan,nan];
 
 % Weight=  an Structure Like oo_
-Weight.var=0;
+load('input\W.mat')
+%Weight.autocorr{1,1}=[0,0;0,0];
+%Weight.autocorr{1,2}=[0,0;0,0];
 % Maximum Itration
-MaxIt=300;
+MaxIt=1000;
 %Opt=
 Calibratore(FileName,Par_Calib,Calib,Weight,MaxIt);
 % Clear Extra Var

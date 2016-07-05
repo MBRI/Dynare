@@ -4,10 +4,12 @@ function [Opt]=Calibratore(FileName,Par_Calib,Calib,Weight,MaxIt)
 % the snd attemp was not good enuagh so i decided to generate randome
 % numbers for each parameters and build a big sample to explore the
 % behavire of the outcomes of model
+global M_ oo_
+
 if nargin==0
     if exist('.temp/input.mat','file')
         if strcmp(questdlg('Do you want to continue the previous procedure?','Reload','Yes','No','No'),'Yes')
-        load '.temp/input.mat'
+            load '.temp/input.mat'
         else
             error('Retry by applicable arguments.')
         end
@@ -27,7 +29,7 @@ else
         error('Please determie the calibration variables and range')
     end
     if ~exist('MaxIt','var')
-        MaxIt=2;
+        MaxIt=300;
     end
     if ~exist('Calib','var')
         warning('No calibration target specified.')
@@ -40,23 +42,13 @@ else
     % file name errors
     [~,FileName,~] =fileparts(FileName);
     
-    % Calib Errors
-    F1={'Var';'ACorr';'SS';'Mean'}; % all needed fields
-    FF=F1(~isfield(Calib,F1));
-    for i=1:size(FF,1)
-        Calib.(FF{i})=nan;
-    end
-    % Weight errors
-    FF=F1(~isfield(Weight,F1));
-    for i=1:size(FF,1)
-        Weight.(FF{i})=1;
-    end
-    clear FF;
+    
     %% Biuld the necessary files
     % FileName without Extension
     eval(['dynare ' FileName '.mod']);
     close all;
-    load([FileName, '_results.mat']);
+    
+    %load([FileName, '_results.mat']);
     PC=M_.param_nbr;
     VC=M_.endo_nbr;
     
@@ -67,7 +59,7 @@ else
         rmdir('.temp','s')
     end
     mkdir .temp
-    
+    save ('.temp/M_.mat', 'M_') % this will uses in Make Model as initial Value Storage
     % Extract Calib Parameter % [Min_Par_Calib,Step_Par_Calib,Max_Par_Calib]=
     GetCalibParam(Par_Calib,M_);
     % Restructure Dynare file
@@ -79,7 +71,7 @@ else
     %Clean Extra files
     %cleanup(FileName);
     clearvars -except Calib  Weight
-
+    
 end
 %% Run the Gen File
 rehash % Refresh the files in order to recognize new file by matlab
@@ -355,19 +347,19 @@ for i=1:NF-1
     duplicated=0;
     for j=i+1:NF
         if Inp.(Fld{i}).P==Inp.(Fld{j}).P
-                duplicated=1;
-                break;
+            duplicated=1;
+            break;
         end
     end
-  if     duplicated==0
-      out.(Fld{i})= Inp.(Fld{i});
-  end  
- 
+    if     duplicated==0
+        out.(Fld{i})= Inp.(Fld{i});
+    end
+    
 end
 % The Last One Always is not duplicated
 out.(Fld{NF})= Inp.(Fld{NF});
 end
-function [FileName,Par_Calib,Calib,Weight]=errHandl(FileName,Par_Calib,Calib,Weight,VC)
+function [FileName,Par_Calib,Calib,Weight]=errHandl0(FileName,Par_Calib,Calib,Weight,VC)
 % Var
 if size(Calib.Var,1)>VC;
     warning('Calib.Var has extra rows. I dropped them')
@@ -377,7 +369,8 @@ if size(Calib.Var,2)>VC;
     warning('Calib.Var has extra columns. I dropped them')
     Calib.Var(:,VC+1:end)=[];
 end
-if size(Calib.ACorr,1)>VC;
+i=1;
+if size(Calib.ACorr{1,i},1)>VC;
     warning('Calib.ACorr has extra rows. I dropped them')
     Calib.Var(VC+1:end,:)=[];
 end
@@ -473,4 +466,53 @@ if length (Weight.Mean)<VC;
     warning('Calib.Mean has not adequate elements. I fill with nan')
     Weight.Mean(end+1:VC)=ones();
 end
+end
+function [FileName,Par_Calib,Calib,Weight]=errHandl(FileName,Par_Calib,Calib,Weight,VC)
+global oo_
+% if the felid of Calib does exist in oo_
+F1=fieldnames(Calib); % all needed fields
+FF=F1(~isfield(oo_,F1));
+if ~isempty(FF)
+    error(['fields of calib not exist in oo_: ' FF{:}]);
+end
+% if the felid of Calib does exist in Weight
+FF=F1(~isfield(Weight,F1));
+for i=1:size(FF,1)
+    Weight.(FF{i})=1;
+end
+clear FF;
+% Var
+% check the size of variables
+for i=1:length(F1)
+    if iscell(oo_.(F1{i}))
+        % no idea
+        % cell2mat 
+    else
+    VR=size(oo_.(F1{i}),1);
+    VC=size(oo_.(F1{i}),2);
+    if  size(Calib.(F1{i}),1)>VR;
+        warning('Calib.Var has extra rows. I dropped them')
+        Calib.(F1{i})(VR+1:end,:)=[];
+    end
+    if size(Calib.(F1{i}),2)>VC;
+        warning('Calib.Var has extra columns. I dropped them')
+        Calib.(F1{i})(:,VC+1:end)=[];
+    end
+    
+    if size(Calib.(F1{i}),1)<VR;
+        warning('Calib.Var has not adequate rows. I fill with nan')
+        Calib.(F1{i})=[Calib.(F1{i});nan(VR-size(CCalib.(F1{i}),1),size(Calib.(F1{i}),2))];
+    end
+    if size(Calib.(F1{i}),2)<VC;
+        warning('Calib.Var has  not adequate columns. I fill with nan')
+        Calib.(F1{i})=[Calib.(F1{i}),nan(size(Calib.(F1{i}),1),VC-size(Calib.(F1{i}),2))];
+    end
+    end
+end
+
+% Weight
+if size(Weight.(F1{i}))~=size(oo_.(F1{i}))
+        warning(['size of ' F1{i} ' in Weight is not consistent with oo_.' F1{i} ]);
+end
+
 end
