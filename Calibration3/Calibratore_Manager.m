@@ -13,7 +13,7 @@ Par_Calib(1)={'*=-10:10'};
 % Calib=  an Structure Like oo_
 % just create fiels do you wnat to be considered in calibration
 % use nan for unimporatant values
-load('input\C.mat')
+load('input\C2.mat')
 %Calib.var=[1,nan;nan,1];
 %Calib.autocorr{1,1}=[nan,nan;nan,nan];
 %Calib.autocorr{1,2}=[nan,nan;nan,nan];

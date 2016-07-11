@@ -53,7 +53,7 @@ else
     VC=M_.endo_nbr;
     
     %% Second stage error checking base on mod results
-    [FileName,Par_Calib,Calib,Weight]=errHandl(FileName,Par_Calib,Calib,Weight,VC);
+    [Par_Calib,Calib,Weight]=errHandl0(Par_Calib,Calib,Weight,oo_);
     %%
     if exist('.temp','dir')
         rmdir('.temp','s')
@@ -359,8 +359,25 @@ end
 % The Last One Always is not duplicated
 out.(Fld{NF})= Inp.(Fld{NF});
 end
-function [FileName,Par_Calib,Calib,Weight]=errHandl0(FileName,Par_Calib,Calib,Weight,VC)
+function [Par_Calib,Calib,Weight]=errHandl0(Par_Calib,Calib,Weight,oo_)
 % Var
+
+% if the felid of Calib does exist in oo_
+F1=fieldnames(Calib); % all needed fields
+FF=F1(~isfield(oo_,F1));
+if ~isempty(FF)
+    error(['fields of calib not exist in oo_: ' FF{:}]);
+end
+% keep the elemnts of oo that exist in Calib
+F2=fieldnames(oo_);
+FF=F2(~isfield(Calib,F2));
+oo_=rmfield(oo_,FF);
+
+addpath('structcmp');
+[~,Calib]=structcmp2(oo_,Calib,'FillWith',nan);
+[~,Weight]=structcmp2(Calib, Weight,'FillWith',1);
+rmpath('structcmp');
+%{
 if size(Calib.Var,1)>VC;
     warning('Calib.Var has extra rows. I dropped them')
     Calib.Var(VC+1:end,:)=[];
@@ -466,7 +483,9 @@ if length (Weight.Mean)<VC;
     warning('Calib.Mean has not adequate elements. I fill with nan')
     Weight.Mean(end+1:VC)=ones();
 end
+%}
 end
+%{
 function [FileName,Par_Calib,Calib,Weight]=errHandl(FileName,Par_Calib,Calib,Weight,VC)
 global oo_
 % if the felid of Calib does exist in oo_
@@ -516,3 +535,4 @@ if size(Weight.(F1{i}))~=size(oo_.(F1{i}))
 end
 
 end
+%}
