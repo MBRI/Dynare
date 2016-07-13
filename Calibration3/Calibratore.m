@@ -54,7 +54,7 @@ else
     
     %% Second stage error checking base on mod results
     [Par_Calib,Calib,Weight]=errHandl0(Par_Calib,Calib,Weight,oo_);
-    %%
+    %% save to hrd drive
     if exist('.temp','dir')
         rmdir('.temp','s')
     end
@@ -82,10 +82,10 @@ MakeModel;
 end
 function writeModFile(FileName,NewFile,PC,MaxIt)
 %Remove previous file
-if exist(['Temp_Cal.m'],'file')
-    delete(['Temp_Cal.m']);
+if exist('Temp_Cal.m','file')
+    delete('Temp_Cal.m');
 end
-fid=fopen(['Temp_Cal.m'],'w+');
+fid=fopen('Temp_Cal.m','w+');
 %fprintf(fid,'%s\n',['function ' FileName '_Calib()']);%Min_Par_Calib,Step_Par_Calib,Max_Par_Calib
 %fprintf(fid,'%s\n','global oo_');
 % Load init and input values
@@ -211,7 +211,7 @@ NewFile=strrep(NewFile,'clear all','');
 
 % BuildUp .m file to function
 for i=1:PC
-    NewFile=strrep(NewFile,['M_.params(' num2str(i) ') = ' num2str(M_.params(i))],['M_.params(' num2str(i) ') = Par_Calib(' num2str(i) ')']);
+    NewFile=strrep(NewFile,['M_.params( ' num2str(i) ' ) = ' num2str(M_.params(i))],['M_.params( ' num2str(i) ' ) = Par_Calib(' num2str(i) ')']);
 end
 % Clear All Print Options
 NewFile=strrep(NewFile,'options_.noprint','% options_.noprint');
@@ -264,6 +264,7 @@ itr=0; % it is useful
 
 save '.temp/init.mat' init itr;
 end
+%{
 function Opt=SecondBest(Calib,Weight) % Redundent
 MaxSize=1000;
 % Clibration Vaues
@@ -336,6 +337,8 @@ while(1)
 end
 Opt=RemDuplicate(Res);
 end
+%}
+%{
 function out=RemDuplicate(Inp)% Redundent
 Fld=fields(Inp);
 if isempty(Fld)
@@ -359,6 +362,7 @@ end
 % The Last One Always is not duplicated
 out.(Fld{NF})= Inp.(Fld{NF});
 end
+%}
 function [Par_Calib,Calib,Weight]=errHandl0(Par_Calib,Calib,Weight,oo_)
 % Var
 
@@ -372,6 +376,10 @@ end
 F2=fieldnames(oo_);
 FF=F2(~isfield(Calib,F2));
 oo_=rmfield(oo_,FF);
+
+F2=fieldnames(Weight);
+FF=F2(~isfield(Calib,F2));
+Weight=rmfield(Weight,FF);
 
 addpath('structcmp');
 [~,Calib]=structcmp2(oo_,Calib,'FillWith',nan);
