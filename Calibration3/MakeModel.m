@@ -1,5 +1,5 @@
 %function [Sm]=MakeModel()
-Max_Degree=15;
+Max_Degree=30;
 % Load & Store name of parameters
 load('.temp\M_.mat');
 names=cellstr(M_.param_names);
@@ -56,6 +56,7 @@ S_G=S_G-diag(S_G(:,1))*ones(size(S_G));
 S_G(:,1)=[];
 %
 n_G=size(S_G,1); % Number of Goals
+No_variance=0;
 %% fit on polynominal
 addpath('PolyfitnTools');
 for d=Max_Degree:-1:1 % find the biggest degree of polynominal to fit
@@ -79,6 +80,8 @@ for i=1:n_G
         %  sumbolic
         Sm(i,1)=polyn2sym(P);
     else
+        No_variance=No_variance+1;
+        warning(['No variance found in ' num2str(No_variance) 'of ' num2str(n_G) ' Target(s)']);
          Fitted.(['G' num2str(i)])=0;
          %  sumbolic
         Sm(i,1)=0;
@@ -89,6 +92,9 @@ rmpath('PolyfitnTools');
 save ('.temp/Fitted.mat', 'Fitted')
 close (h)
 %%
+if No_variance==n_G
+    error('No Valid Variance')
+end
 % Find sumbolic minimum
 f=Sm.'*diag(S_W)*Sm;
 % try %#ok<TRYNC> % may f is not convertable
@@ -133,7 +139,9 @@ for i=1:n_P
     Res.Value(i)=xfinal(i);
 end
 Res
-
+for i=1:n_G
+    Fitted.(['G' num2str(i)]).OptimalValue=double(subs(Sm(i,1),Res.Parameter,Res.Value ));
+end
 %%
 %if exist('sympoly') == 2
 %  polyn2sympoly(P)

@@ -202,7 +202,7 @@ PC=length(M_.params);
 Originalfile = fileread([FileName, '.m']);
 NewFile='';
 %NewFile=sprintf('%s1 \n %s2','newpage','mine');
-NewFile=sprintf('%s\n',['function Temp_Cal(Par_Calib)']);
+NewFile=sprintf('%s\n',['function [oo_,M_]=Temp_Cal(Par_Calib)']);
 
 NewFile=sprintf('%s \n %s',NewFile,Originalfile);
 
