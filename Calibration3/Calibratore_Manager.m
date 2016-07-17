@@ -13,7 +13,7 @@ Par_Calib(1)={'*=-100:100'};
 % Calib=  an Structure Like oo_
 % just create fiels do you wnat to be considered in calibration
 % use nan for unimporatant values
-load('input\C3.mat')
+load('input\C4.mat')
 %Calib.var=[1,nan;nan,1];
 %Calib.autocorr{1,1}=[nan,nan;nan,nan];
 %Calib.autocorr{1,2}=[nan,nan;nan,nan];
@@ -23,7 +23,7 @@ load('input\W.mat')
 %Weight.autocorr{1,1}=[0,0;0,0];
 %Weight.autocorr{1,2}=[0,0;0,0];
 % Maximum Itration
-MaxIt=5000;
+MaxIt=50000;
 %Opt=
 Calibratore(FileName,Par_Calib,Calib,Weight,MaxIt);
 % Clear Extra Var

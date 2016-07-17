@@ -25,8 +25,9 @@ h = waitbar(0/n_O,'Collect Data...');
 load('.temp\input.mat');
 F1=fieldnames(Calib);
 addpath('structcmp');
-S_G=struct2vec(Calib,F1);
+S_G0=struct2vec(Calib,F1); %Taget Values
 S_W=struct2vec(Weight,F1);
+S_G=[];
 S_P=[];
 % Gather data
 for i=1:n_O
@@ -44,16 +45,18 @@ close (h)
 clear Itr i Flds
 rmpath('structcmp');
 % refine S_G to be deviation from clib
-S_W(~isfinite(S_G(:,1)),:)=[];
-S_G(~isfinite(S_G(:,1)),:)=[];
+S_W(~isfinite(S_G0(:,1)),:)=[];
+S_G(~isfinite(S_G0(:,1)),:)=[];
+S_G0(~isfinite(S_G0(:,1)),:)=[];
 S_G(~isfinite(S_W(:,1)),:)=[];
 S_W(~isfinite(S_W(:,1)),:)=[];
 S_G(S_W(:,1)==0,:)=[];
+S_G0(S_W(:,1)==0,:)=[];
 S_W(S_W(:,1)==0,:)=[];
 %Defrence frome Calibrated variance
-S_G=S_G-diag(S_G(:,1))*ones(size(S_G));
+%S_G=S_G-diag(S_G(:,1))*ones(size(S_G));
 % Remove the calibrated variance
-S_G(:,1)=[];
+%S_G(:,1)=[];
 %
 n_G=size(S_G,1); % Number of Goals
 No_variance=0;
@@ -82,12 +85,13 @@ for i=1:n_G
     else
         No_variance=No_variance+1;
         warning(['No variance found in ' num2str(No_variance) 'of ' num2str(n_G) ' Target(s)']);
-         Fitted.(['G' num2str(i)])=0;
-         %  sumbolic
+        Fitted.(['G' num2str(i)])=0;
+        % sumbolic
         Sm(i,1)=0;
     end
     
 end
+
 rmpath('PolyfitnTools');
 save ('.temp/Fitted.mat', 'Fitted')
 close (h)
@@ -96,7 +100,7 @@ if No_variance==n_G
     error('No Valid Variance')
 end
 % Find sumbolic minimum
-f=Sm.'*diag(S_W)*Sm;
+f=(Sm-S_G0).'*diag(S_W)*(Sm-S_G0);
 % try %#ok<TRYNC> % may f is not convertable
 % if double(f)==0
 %    error('No Variance in data');
@@ -141,6 +145,18 @@ end
 Res
 for i=1:n_G
     Fitted.(['G' num2str(i)]).OptimalValue=double(subs(Sm(i,1),Res.Parameter,Res.Value ));
+end
+S_G_Predicted=nan(size(S_G));
+for i=1:n_G
+    nf=size(Fitted.(['G' num2str(i)]).ModelTerms,1);
+    np=size(S_P,2);
+    A1=sum(kron(S_P.',ones(nn,1)).^kron(ones(np,1),Fitted.(['G' num2str(i)]).ModelTerms),2);
+    S_G_Predicted(i,:)=Fitted.(['G' num2str(i)]).Coefficients*reshape(A1,nf,[]);
+    figure();
+    plot(S_G_Predicted(i,:),'*')
+    hold on
+     plot(S_G(i,:),'o')
+    hold off
 end
 %%
 %if exist('sympoly') == 2
