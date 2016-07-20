@@ -6,9 +6,9 @@ clc
 FileName='example0.mod';
 
 % Minimum % Step %Maximum
-Par_Calib(1)={'*=-100:100'};
+Par_Calib(1)={'*=-10:10'};
 %Par_Calib(1)={'a=-6:6'};
-%Par_Calib(2)={'c:-6:6'};
+%Par_Calib(2)={'b:-6:6'};
 
 % Calib=  an Structure Like oo_
 % just create fiels do you wnat to be considered in calibration
@@ -23,7 +23,7 @@ load('input\W.mat')
 %Weight.autocorr{1,1}=[0,0;0,0];
 %Weight.autocorr{1,2}=[0,0;0,0];
 % Maximum Itration
-MaxIt=50000;
+MaxIt=5000;
 %Opt=
 Calibratore(FileName,Par_Calib,Calib,Weight,MaxIt);
 % Clear Extra Var

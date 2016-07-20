@@ -18,7 +18,7 @@ delete([fname, '_results.mat']);
 delete([fname, '.log']);
 delete([fname, '*.eps']);
 delete([fname, '*.asv']);
-delete('Temp_Cal.m');
+movefile('Temp_Cal.m','.temp\Temp_Cal.m');
 try
 rmdir(fname,'s');
 end

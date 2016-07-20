@@ -8,7 +8,12 @@ Max_Par_Calib=init.Max_Par_Calib;
 n_o=0;
 clear init Par_Calib;
 if ~exist('Temp_Cal.m','file')
-    error('Model m file not found.');
+    if exist('.temp\Temp_Cal.m','file')
+        movefile('.temp\Temp_Cal.m','Temp_Cal.m');
+        rehash
+    else
+        error('Model m file not found.');
+    end
 end
 %if exist('.temp/LVal.mat','file')
 %load '.temp/LVal.mat';
@@ -16,11 +21,11 @@ end
 %end
 h = waitbar(0/MaxIt,'Generating Samples, Please wait...');
 % make uniform Randome values for each parametes
-    rng('shuffle') % it is use ful to determine the min and max greater than your need
+rng('shuffle') % it is use ful to determine the min and max greater than your need
 Par_Calib =repmat( Min_Par_Calib,1,MaxIt) + repmat(-1*Min_Par_Calib+Max_Par_Calib,1,MaxIt).*rand(size(Max_Par_Calib,1),MaxIt); % Generate uniform Randome Numbers for each parameter in Range specified by user
 % Great itration
 for itr=1:MaxIt
-  
+    
     waitbar(itr / MaxIt)
     try
         [Itr.oo_]=Temp_Cal(Par_Calib(:,itr));
@@ -31,9 +36,9 @@ for itr=1:MaxIt
         %Itr.oo_=oo_;
         Itr.P=Par_Calib(:,itr);
         save (['.temp/Itr' num2str(itr) '.mat'], 'Itr')
-        clear Itr 
+        clear Itr
         n_o=n_o+1;
-    catch er 
+    catch er
         warning('one try is missed');
         warning(er.message)
     end
@@ -44,6 +49,6 @@ cleanup(FileName);
 
 home;
 disp([num2str(n_o) ' valid points has been found from ' num2str(MaxIt) ' attempts.']);
-clear;
+
 end
 
