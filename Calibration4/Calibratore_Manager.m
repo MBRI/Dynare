@@ -17,15 +17,15 @@ load('input\C4.mat')
 %Calib.var=[1,nan;nan,1];
 %Calib.autocorr{1,1}=[nan,nan;nan,nan];
 %Calib.autocorr{1,2}=[nan,nan;nan,nan];
-Include_exo_var=1;
-
+%Include_exo_var=1;
+ex_Calib(1)={'*=0:1'};
 % Weight=  an Structure Like oo_
 load('input\W.mat')
 %Weight.autocorr{1,1}=[0,0;0,0];
 %Weight.autocorr{1,2}=[0,0;0,0];
 % Maximum Itration
-MaxIt=5000;
+MaxIt=10000;
 %Opt=
-Calibratore(FileName,Par_Calib,Calib,Weight,MaxIt,Include_exo_var);
+Calibratore(FileName,Par_Calib,ex_Calib,Calib,Weight,MaxIt);
 % Clear Extra Var
 %clearvars -except Opt

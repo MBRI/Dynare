@@ -22,7 +22,7 @@ shocks;
 var e_x; stderr 0.9;
 end;
 clc;
-
+/*
 varobs y x; 
 estimated_params;
 a, uniform_pdf, -1.5, .5;
@@ -43,5 +43,6 @@ x,y(1:4), +; //[sign restriction for first year acf with logical OR]
 end;
 
 dynare_sensitivity;
-//stoch_simul(irf=20);
+*/
+stoch_simul(irf=20);
  //

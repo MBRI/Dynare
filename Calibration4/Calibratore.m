@@ -1,10 +1,12 @@
 
-function [Opt]=Calibratore(FileName,Par_Calib,Calib,Weight,MaxIt,Include_exo_var)
+function [Opt]=Calibratore(FileName,Par_Calib,ex_Calib,Calib,Weight,MaxIt)
 % this file is developed to simplify the handy calibration
 % the snd attemp was not good enuagh so i decided to generate randome
 % numbers for each parameters and build a big sample to explore the
 % behavire of the outcomes of model
-global M_ oo_
+% in this version leave to rebiuld .m file and use info =
+% stoch_simul(var_list_); directly
+global  M_ options_ oo_ it_ %var_list
 
 if nargin==0
     if exist('.temp/input.mat','file')
@@ -59,29 +61,38 @@ else
         rmdir('.temp','s')
     end
     mkdir .temp
-    save ('.temp/M_.mat', 'M_') % this will uses in Make Model as initial Value Storage
+    
+    % change some of options
+    options_.nolog=1; options_.noprint=1; options_.nograph=1; options_.graph_format='none';
+    
+    save '.temp/Dynares.mat'  M_ options_ oo_ it_ %var_list% this will uses in Make Model as initial Value Storage
     % Extract Calib Parameter % [Min_Par_Calib,Step_Par_Calib,Max_Par_Calib]=
-    GetCalibParam(Par_Calib,M_);
+    GetCalibParam(Par_Calib,ex_Calib,M_);
     % Restructure Dynare file
-    NewFile=writeNew_mFile(FileName);
+ %   NewFile=writeNew_mFile(FileName);
     % Create Loop file
-    writeModFile(FileName,NewFile,PC,MaxIt,Include_exo_var);
+%    writeModFile(FileName,NewFile,PC,MaxIt,Include_exo_var);
     % from this point
-    save '.temp/input.mat' FileName Par_Calib Calib Weight PC MaxIt Include_exo_var
+    save '.temp/input.mat' FileName Par_Calib Calib Weight PC MaxIt
     %Clean Extra files
     %cleanup(FileName);
     clearvars -except Calib  Weight
     
 end
 %% Run the Gen File
-rehash % Refresh the files in order to recognize new file by matlab
+%rehash % Refresh the files in order to recognize new file by matlab
 Gen_Sample(); % generate Samples
 % find the Best option
 %Opt=MakeModel();
 MakeModel;
 end
+%{
 function writeModFile(FileName,NewFile,PC,MaxIt,Include_exo_var)
+
+
+
 %Remove previous file
+%{
 if exist('Temp_Cal.m','file')
     delete('Temp_Cal.m');
 end
@@ -194,7 +205,7 @@ fprintf(fid,'%s\n',NewFile);
 %fprintf(fid,'%s\n',ThirdBest);
 
 fclose(fid);
-
+%}
 end
 function NewFile=writeNew_mFile(FileName)
 global M_
@@ -224,8 +235,47 @@ NewFile=strrep(NewFile,'global_initialization;',['global_initialization;' char(1
 % End the created function
 NewFile=sprintf('%s \n %s',NewFile,'end ');
 end
-function GetCalibParam(Par_Calib0,M)
+%}
+%}
+function GetCalibParam(Par_Calib0,ex_Calib0,M)
 %[Min_Par_Calib,Step_Par_Calib,Max_Par_Calib]=
+%% for exo var
+ex_Calib0=strrep(ex_Calib0,'=',':');
+Cal={'','',''};
+xCal={'','',''};
+for i=1:size(ex_Calib0,1)
+    try
+        xCal=[xCal;strsplit(ex_Calib0{i},':')];
+    catch
+        error('Not appropriate use of ex_Calib. ');
+    end
+end
+ex_Calib0=xCal(2:end,:);
+
+ex_Calib=cellstr(M.exo_names);
+if strcmp(ex_Calib0{1},'*')
+    ex_Calib0=[ex_Calib,repmat(ex_Calib0(2:end),size(ex_Calib,1),1)];
+end
+% Par_Calib=cellstr(M.param_names);
+Min_x_Calib=M.Sigma_e;
+%Step_Par_Calib=ones(size(Min_Par_Calib,1),1);
+Max_x_Calib=M.Sigma_e;
+for i=1:length(ex_Calib)
+    xCal=ex_Calib0(strcmp(ex_Calib0(:,1),ex_Calib(i)),:);
+    if ~isempty(xCal)
+        Min_x_Calib(i)=str2double(xCal{2});
+        %Step_Par_Calib(i)=str2double(Cal{3});
+        Max_x_Calib(i)=str2double(xCal{3});%{4}
+    end
+end
+
+%for i=1:length(Par_Calib)
+init.Min_x_Calib=Min_x_Calib;
+%init.Step_Par_Calib=Step_Par_Calib;
+init.Max_x_Calib=Max_x_Calib;
+
+
+%% fo parameters
 Par_Calib0=strrep(Par_Calib0,'=',':');
 %Par_Calib=cellfun(@(x) strsplit(x,':'),Par_Calib0,'UniformOutput' , false);
 %Cal={'','','',''};
