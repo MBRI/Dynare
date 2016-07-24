@@ -92,13 +92,28 @@ end
 Fitted=struct();
 sym Sm;
 h = waitbar(0/n_G,'Fit Data...');
+S_G_Predicted=nan(size(S_G));
 % fit for each goal
 for i=1:n_G
     waitbar(i/n_G)
     % check variance of data
     if var(S_G(i,:))>0.0000005
+        % First Estimation
         P=polyfitn([S_P.',S_ex.'],S_G(i,:),d);
-        P.VarNames=[names.',xnames.'];
+        %P.VarNames=[names.',xnames.'];
+        
+        %% remove oulier
+            nf=size(P.ModelTerms,1);
+            np=size(S_P,2);
+            A1=sum(kron([S_P.',S_ex.'],ones(nf,1)).^kron(ones(np,1),P.ModelTerms),2);
+            S_G_Predicted(i,:)=P.Coefficients*reshape(A1,nf,[]);
+            I =~( abs(S_G_Predicted(i,:) - S_G(i,:)) > 0.5*std( S_G(i,:)));
+            
+            %Second Estimstion
+            P=polyfitn([S_P(:,I).',S_ex(:,I).'],S_G(i,I),d);
+            P.VarNames=[names.',xnames.'];
+            
+        %%
         Fitted.(['G' num2str(i)])=P;
         %  sumbolic
         Sm(i,1)=polyn2sym(P);
