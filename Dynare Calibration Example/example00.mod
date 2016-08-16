@@ -1,4 +1,5 @@
-var y, x;
+var y$ {\hat y}$ (long name=’output’),
+     x ${\kappa}$ (long name=’consumption’) ;
 varexo e_x;
 
 parameters a, b, c, d;
@@ -22,6 +23,7 @@ shocks;
 var e_x; stderr 0.9;
 end;
 clc;
+
 /*
 varobs y x; 
 estimated_params;
@@ -44,5 +46,12 @@ end;
 
 dynare_sensitivity;
 */
-stoch_simul(irf=20);
- //
+// stoch_simul(irf=20);
+
+options_.TeX=1
+
+write_latex_dynamic_model;
+write_latex_parameter_table;
+write_latex_definitions;
+collect LaTeX Files (M );
+ // end

@@ -107,7 +107,7 @@ for i=1:n_G
             np=size(S_P,2);
             A1=sum(kron([S_P.',S_ex.'],ones(nf,1)).^kron(ones(np,1),P.ModelTerms),2);
             S_G_Predicted(i,:)=P.Coefficients*reshape(A1,nf,[]);
-            I =~( abs(S_G_Predicted(i,:) - S_G(i,:)) > 0.5*std( S_G(i,:)));
+            I =~( abs(S_G_Predicted(i,:) - S_G(i,:)) > 1.5*std( S_G(i,:)));
             
             %Second Estimstion
             P=polyfitn([S_P(:,I).',S_ex(:,I).'],S_G(i,I),d);

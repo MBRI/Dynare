@@ -19,7 +19,7 @@ steady;
 check;
 
 shocks;
-var e_x; stderr 0.81001;
+var e_x; stderr 0.81;
 end;
 
 stoch_simul(irf=20);
