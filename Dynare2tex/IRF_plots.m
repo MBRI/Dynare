@@ -381,8 +381,8 @@ for j=1:J
     for i=1:I
         s=[];
         for h=1:H
-            if isfield(IRF.(['F' num2str(h)]), [VList.F1{i} '_' SList.F1{j}])
-                s1= (IRF.(['F' num2str(h)]).([VList.F1{i} '_' SList.F1{j}])).';
+            if isfield(IRF.(['F' num2str(h)]), [VList.(['F' num2str(h)]){i} '_' SList.(['F' num2str(h)]){j}])
+                s1= (IRF.(['F' num2str(h)]).([VList.(['F' num2str(h)]){i} '_' SList.(['F' num2str(h)]){j}])).';
                 
                 if ReScale
                     mm=max(abs(s1(1:min(irf_duration,end))));
@@ -668,7 +668,7 @@ end
 cd(CPath);
 end
 function SaveTiles(Ser,VList,SList,Path)
-disp('Creating title guid file');
+disp('Creating title guide file');
 Tbl=dataset();
 Tbl.Filenames=fields(Ser);
 Tbl.Sock_Order=cellfun(@(x) str2double(x(2:7)),Tbl.Filenames, 'UniformOutput', false);
